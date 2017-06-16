@@ -13,8 +13,9 @@ Search operators: [:and:, :or:, :not:]
 
 Searching for hurricanes :
 
-.. code-block:: powershell
-# hurricanes
+.. code-block:: bash
+
+   # hurricanes
    [*] Article :WEST TEXAS COTTON CROP UNSCATHED BY STORM
        Document:reuters\reut2-018.sgm
        tf-idf  : 0.04846927182717779
@@ -28,7 +29,8 @@ Searching for hurricanes :
 
 Searching for documents with the word election but not the word banks
 
-.. code-block:: powershell
+.. code-block:: bash
+
    # elections :not: banks
    [*] Article :HONEYWELL <HON> ELECTS NEW CHIEF EXECUTIVE
        Document:reuters\reut2-020.sgm

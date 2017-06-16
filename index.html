@@ -48,25 +48,40 @@
 for each letter (a, b, c, d, ...), digit (0-9).</p>
 <p>Search operators: [:and:, :or:, :not:]</p>
 <p>Searching for hurricanes :</p>
-<div class="highlight-powershell"><div class="highlight"><pre><span></span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># hurricanes</span>
+<span class="o">[</span>*<span class="o">]</span> Article :WEST TEXAS COTTON CROP UNSCATHED BY STORM
+    Document:reuters<span class="se">\r</span>eut2-018.sgm
+    tf-idf  : 0.04846927182717779
+<span class="o">[</span>*<span class="o">]</span> Article :UK SUGAR FACTORY CLOSES DUE TO SHORTAGE OF BEET
+    Document:reuters<span class="se">\r</span>eut2-021.sgm
+    tf-idf  : 0.04326451780546743
+<span class="o">[</span>*<span class="o">]</span> Article :CUBA SUGAR CROP SEEN AT LEAST SAME AS LAST YEAR
+    Document:reuters<span class="se">\r</span>eut2-004.sgm
+    tf-idf  : 0.043119820421502655
 </pre></div>
 </div>
-<dl class="docutils">
-<dt># hurricanes</dt>
-<dd><dl class="first last docutils">
-<dt>[*] Article :WEST TEXAS COTTON CROP UNSCATHED BY STORM</dt>
-<dd>Document:reutersreut2-018.sgm
-tf-idf  : 0.04846927182717779</dd>
-<dt>[*] Article :UK SUGAR FACTORY CLOSES DUE TO SHORTAGE OF BEET</dt>
-<dd>Document:reutersreut2-021.sgm
-tf-idf  : 0.04326451780546743</dd>
-<dt>[*] Article :CUBA SUGAR CROP SEEN AT LEAST SAME AS LAST YEAR</dt>
-<dd>Document:reutersreut2-004.sgm
-tf-idf  : 0.043119820421502655</dd>
-</dl>
-</dd>
-</dl>
 <p>Searching for documents with the word election but not the word banks</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># elections :not: banks</span>
+<span class="o">[</span>*<span class="o">]</span> Article :HONEYWELL &lt;HON&gt; ELECTS NEW CHIEF EXECUTIVE
+    Document:reuters<span class="se">\r</span>eut2-020.sgm
+    tf-idf  : 0.4582163400957904
+<span class="o">[</span>*<span class="o">]</span> Article :H.J. HEINZ &lt;HNZ&gt; ELECTS NEW CHAIRMAN
+    Document:reuters<span class="se">\r</span>eut2-003.sgm
+    tf-idf  : 0.3532084288238384
+<span class="o">[</span>*<span class="o">]</span> Article :INFOTRON &lt;INFN&gt; NAMES NEW CHAIRMAN
+    Document:reuters<span class="se">\r</span>eut2-003.sgm
+    tf-idf  : 0.3260385496835432
+<span class="o">[</span>*<span class="o">]</span> Article :K-TRON &lt;KTII.O&gt; ELECTS NEW PRESIDENT
+    Document:reuters<span class="se">\r</span>eut2-018.sgm
+    tf-idf  : 0.3082546287917135
+<span class="o">[</span>*<span class="o">]</span> Article :DIRECT ACTION &lt;DMK&gt; CALLS SHAREHOLDER MEETING
+    Document:reuters<span class="se">\r</span>eut2-020.sgm
+    tf-idf  : 0.3027500818490043
+<span class="o">[</span>*<span class="o">]</span> Type <span class="o">[</span>n<span class="o">]</span> <span class="k">for</span> next results
+<span class="o">[</span>*<span class="o">]</span> &gt;&gt;&gt;&gt; <span class="o">[</span>p<span class="o">]</span> <span class="k">for</span> previous results
+<span class="o">[</span>*<span class="o">]</span> &gt;&gt;&gt;&gt; <span class="o">[</span>q<span class="o">]</span> to leave results
+</pre></div>
+</div>
 <p>** Core documentation: **</p>
 <div class="toctree-wrapper compound">
 <ul>
