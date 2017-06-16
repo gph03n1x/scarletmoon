@@ -12,6 +12,12 @@ reuters/
 # Idea
 .idea/
 
+# doctrees
+.doctress/
+
+# sources
+_sources/
+
 # Distribution / packaging
 .Python
 env/
