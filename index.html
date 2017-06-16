@@ -44,6 +44,51 @@
             
   <div class="section" id="welcome-to-scarlet-moon-s-documentation">
 <h1>Welcome to Scarlet Moon&#8217;s documentation!<a class="headerlink" href="#welcome-to-scarlet-moon-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>This application creates an inverted index in the form of a binary tree
+for each letter (a, b, c, d, ...), digit (0-9).</p>
+<p>Search operators: [:and:, :or:, :not:]</p>
+<p>Searching for hurricanes :</p>
+<p><a href="#id1"><span class="problematic" id="id2">``</span></a><a href="#id3"><span class="problematic" id="id4">`</span></a>bash
+# hurricanes
+[*] Article :WEST TEXAS COTTON CROP UNSCATHED BY STORM</p>
+<blockquote>
+<div>Document:reutersreut2-018.sgm
+tf-idf  : 0.04846927182717779</div></blockquote>
+<dl class="docutils">
+<dt>[*] Article :UK SUGAR FACTORY CLOSES DUE TO SHORTAGE OF BEET</dt>
+<dd>Document:reutersreut2-021.sgm
+tf-idf  : 0.04326451780546743</dd>
+<dt>[*] Article :CUBA SUGAR CROP SEEN AT LEAST SAME AS LAST YEAR</dt>
+<dd>Document:reutersreut2-004.sgm
+tf-idf  : 0.043119820421502655</dd>
+</dl>
+<p><a href="#id5"><span class="problematic" id="id6">``</span></a><a href="#id7"><span class="problematic" id="id8">`</span></a></p>
+<p>Searching for documents with the word election but not the word banks</p>
+<p><a href="#id9"><span class="problematic" id="id10">``</span></a><a href="#id11"><span class="problematic" id="id12">`</span></a>bash
+# elections :not: banks
+[*] Article :HONEYWELL &lt;HON&gt; ELECTS NEW CHIEF EXECUTIVE</p>
+<blockquote>
+<div>Document:reutersreut2-020.sgm
+tf-idf  : 0.4582163400957904</div></blockquote>
+<dl class="docutils">
+<dt>[*] Article :H.J. HEINZ &lt;HNZ&gt; ELECTS NEW CHAIRMAN</dt>
+<dd>Document:reutersreut2-003.sgm
+tf-idf  : 0.3532084288238384</dd>
+<dt>[*] Article :INFOTRON &lt;INFN&gt; NAMES NEW CHAIRMAN</dt>
+<dd>Document:reutersreut2-003.sgm
+tf-idf  : 0.3260385496835432</dd>
+<dt>[*] Article :K-TRON &lt;KTII.O&gt; ELECTS NEW PRESIDENT</dt>
+<dd>Document:reutersreut2-018.sgm
+tf-idf  : 0.3082546287917135</dd>
+<dt>[*] Article :DIRECT ACTION &lt;DMK&gt; CALLS SHAREHOLDER MEETING</dt>
+<dd>Document:reutersreut2-020.sgm
+tf-idf  : 0.3027500818490043</dd>
+</dl>
+<p>[*] Type [n] for next results
+[*] &gt;&gt;&gt;&gt; [p] for previous results
+[*] &gt;&gt;&gt;&gt; [q] to leave results
+<a href="#id13"><span class="problematic" id="id14">``</span></a><a href="#id15"><span class="problematic" id="id16">`</span></a></p>
+<p>** Core documentation: **</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="btree.html">btree module</a></li>
