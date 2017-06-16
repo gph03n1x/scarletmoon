@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>ngrams module &#8212; Scarlet Moon 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="terminal module" href="terminal.html" />
+    <link rel="prev" title="identifier module" href="identifier.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-ngrams">
+<span id="ngrams-module"></span><h1>ngrams module<a class="headerlink" href="#module-ngrams" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="ngrams.NGramIndex">
+<em class="property">class </em><code class="descclassname">ngrams.</code><code class="descname">NGramIndex</code><span class="sig-paren">(</span><em>length</em><span class="sig-paren">)</span><a class="headerlink" href="#ngrams.NGramIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="ngrams.NGramIndex.index_token">
+<code class="descname">index_token</code><span class="sig-paren">(</span><em>token</em><span class="sig-paren">)</span><a class="headerlink" href="#ngrams.NGramIndex.index_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>creates an index with the ngrams of each token.
+:param token:
+:return:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ngrams.NGramIndex.post_filtering">
+<code class="descname">post_filtering</code><span class="sig-paren">(</span><em>wildcard_input</em>, <em>suggestions</em><span class="sig-paren">)</span><a class="headerlink" href="#ngrams.NGramIndex.post_filtering" title="Permalink to this definition">¶</a></dt>
+<dd><p>checks if the suggestion actually matches the wildcard query
+:param wildcard_input:
+:param suggestions:
+:return:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ngrams.NGramIndex.suggestions">
+<code class="descname">suggestions</code><span class="sig-paren">(</span><em>ngrams</em><span class="sig-paren">)</span><a class="headerlink" href="#ngrams.NGramIndex.suggestions" title="Permalink to this definition">¶</a></dt>
+<dd><p>gets all the common tokens from an ngram list.
+:param ngrams:
+:return:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ngrams.NGramIndex.wildcard_ngrams">
+<code class="descname">wildcard_ngrams</code><span class="sig-paren">(</span><em>wildcard_input</em><span class="sig-paren">)</span><a class="headerlink" href="#ngrams.NGramIndex.wildcard_ngrams" title="Permalink to this definition">¶</a></dt>
+<dd><p>creates the ngrams that based on the wildcard input.
+:param wildcard_input:
+:return:</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="ngrams.get_n_grams">
+<code class="descclassname">ngrams.</code><code class="descname">get_n_grams</code><span class="sig-paren">(</span><em>token</em>, <em>grams_count</em><span class="sig-paren">)</span><a class="headerlink" href="#ngrams.get_n_grams" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns the ngrams of a token
+:param token: ex. results
+:param grams_count: ex. 2
+:return: [&#8216;$r&#8217;, &#8216;re&#8217;, &#8216;es&#8217;, &#8216;su&#8217;, &#8216;ul&#8217;, &#8216;lt&#8217;, &#8216;ts&#8217;, &#8216;s$&#8217;]</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ngrams.query_combinations">
+<code class="descclassname">ngrams.</code><code class="descname">query_combinations</code><span class="sig-paren">(</span><em>parts</em><span class="sig-paren">)</span><a class="headerlink" href="#ngrams.query_combinations" title="Permalink to this definition">¶</a></dt>
+<dd><p>creates a combination of all the possible queries
+that could come out of wildcard query
+:param parts:
+:return:</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="identifier.html" title="previous chapter">identifier module</a></li>
+      <li>Next: <a href="terminal.html" title="next chapter">terminal module</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/ngrams.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Giannis Papaioannou.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/ngrams.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

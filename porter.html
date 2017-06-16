@@ -1,0 +1,252 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>porter module &#8212; Scarlet Moon 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="querying module" href="querying.html" />
+    <link rel="prev" title="logic module" href="logic.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-porter">
+<span id="porter-module"></span><h1>porter module<a class="headerlink" href="#module-porter" title="Permalink to this headline">¶</a></h1>
+<p>Porter Stemming Algorithm
+This is the Porter stemming algorithm, ported to Python from the
+version coded up in ANSI C by the author. It may be be regarded
+as canonical, in that it follows the algorithm presented in</p>
+<p>Porter, 1980, An algorithm for suffix stripping, Program, Vol. 14,
+no. 3, pp 130-137,</p>
+<p>only differing from it at the points maked &#8211;DEPARTURE&#8211; below.</p>
+<p>See also <a class="reference external" href="http://www.tartarus.org/~martin/PorterStemmer">http://www.tartarus.org/~martin/PorterStemmer</a></p>
+<p>The algorithm as described in the paper could be exactly replicated
+by adjusting the points of DEPARTURE, but this is barely necessary,
+because (a) the points of DEPARTURE are definitely improvements, and
+(b) no encoding of the Porter stemmer I have seen is anything like
+as exact as this version, even with the points of DEPARTURE!</p>
+<p>Vivake Gupta (<a class="reference external" href="mailto:v&#37;&#52;&#48;nano&#46;com">v<span>&#64;</span>nano<span>&#46;</span>com</a>)</p>
+<p>Release 1: January 2001</p>
+<p>Further adjustments by Santiago Bruno (<a class="reference external" href="mailto:bananabruno&#37;&#52;&#48;gmail&#46;com">bananabruno<span>&#64;</span>gmail<span>&#46;</span>com</a>)
+to allow word input not restricted to one word per line, leading
+to:</p>
+<p>release 2: July 2008</p>
+<dl class="class">
+<dt id="porter.PorterStemmer">
+<em class="property">class </em><code class="descclassname">porter.</code><code class="descname">PorterStemmer</code><a class="headerlink" href="#porter.PorterStemmer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="porter.PorterStemmer.cons">
+<code class="descname">cons</code><span class="sig-paren">(</span><em>i</em><span class="sig-paren">)</span><a class="headerlink" href="#porter.PorterStemmer.cons" title="Permalink to this definition">¶</a></dt>
+<dd><p>cons(i) is TRUE &lt;=&gt; b[i] is a consonant.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="porter.PorterStemmer.cvc">
+<code class="descname">cvc</code><span class="sig-paren">(</span><em>i</em><span class="sig-paren">)</span><a class="headerlink" href="#porter.PorterStemmer.cvc" title="Permalink to this definition">¶</a></dt>
+<dd><p>cvc(i) is TRUE &lt;=&gt; i-2,i-1,i has the form consonant - vowel - consonant
+and also if the second c is not w,x or y. this is used when trying to
+restore an e at the end of a short  e.g.</p>
+<blockquote>
+<div>cav(e), lov(e), hop(e), crim(e), but
+snow, box, tray.</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="porter.PorterStemmer.doublec">
+<code class="descname">doublec</code><span class="sig-paren">(</span><em>j</em><span class="sig-paren">)</span><a class="headerlink" href="#porter.PorterStemmer.doublec" title="Permalink to this definition">¶</a></dt>
+<dd><p>doublec(j) is TRUE &lt;=&gt; j,(j-1) contain a double consonant.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="porter.PorterStemmer.ends">
+<code class="descname">ends</code><span class="sig-paren">(</span><em>s</em><span class="sig-paren">)</span><a class="headerlink" href="#porter.PorterStemmer.ends" title="Permalink to this definition">¶</a></dt>
+<dd><p>ends(s) is TRUE &lt;=&gt; k0,...k ends with the string s.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="porter.PorterStemmer.m">
+<code class="descname">m</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#porter.PorterStemmer.m" title="Permalink to this definition">¶</a></dt>
+<dd><p>m() measures the number of consonant sequences between k0 and j.
+if c is a consonant sequence and v a vowel sequence, and &lt;..&gt;
+indicates arbitrary presence,</p>
+<blockquote>
+<div>&lt;c&gt;&lt;v&gt;       gives 0
+&lt;c&gt;vc&lt;v&gt;     gives 1
+&lt;c&gt;vcvc&lt;v&gt;   gives 2
+&lt;c&gt;vcvcvc&lt;v&gt; gives 3
+....</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="porter.PorterStemmer.r">
+<code class="descname">r</code><span class="sig-paren">(</span><em>s</em><span class="sig-paren">)</span><a class="headerlink" href="#porter.PorterStemmer.r" title="Permalink to this definition">¶</a></dt>
+<dd><p>r(s) is used further down.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="porter.PorterStemmer.setto">
+<code class="descname">setto</code><span class="sig-paren">(</span><em>s</em><span class="sig-paren">)</span><a class="headerlink" href="#porter.PorterStemmer.setto" title="Permalink to this definition">¶</a></dt>
+<dd><p>setto(s) sets (j+1),...k to the characters in the string s, readjusting k.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="porter.PorterStemmer.stem">
+<code class="descname">stem</code><span class="sig-paren">(</span><em>p</em>, <em>i</em>, <em>j</em><span class="sig-paren">)</span><a class="headerlink" href="#porter.PorterStemmer.stem" title="Permalink to this definition">¶</a></dt>
+<dd><p>In stem(p,i,j), p is a char pointer, and the string to be stemmed
+is from p[i] to p[j] inclusive. Typically i is zero and j is the
+offset to the last character of a string, (p[j+1] == &#8216;&#8217;). The
+stemmer adjusts the characters p[i] ... p[j] and returns the new
+end-point of the string, k. Stemming never increases word length, so
+i &lt;= k &lt;= j. To turn the stemmer into a module, declare &#8216;stem&#8217; as
+extern, and delete the remainder of this file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="porter.PorterStemmer.step1ab">
+<code class="descname">step1ab</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#porter.PorterStemmer.step1ab" title="Permalink to this definition">¶</a></dt>
+<dd><p>step1ab() gets rid of plurals and -ed or -ing. e.g.</p>
+<p>caresses  -&gt;  caress
+ponies    -&gt;  poni
+ties      -&gt;  ti
+caress    -&gt;  caress
+cats      -&gt;  cat</p>
+<p>feed      -&gt;  feed
+agreed    -&gt;  agree
+disabled  -&gt;  disable</p>
+<p>matting   -&gt;  mat
+mating    -&gt;  mate
+meeting   -&gt;  meet
+milling   -&gt;  mill
+messing   -&gt;  mess</p>
+<p>meetings  -&gt;  meet</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="porter.PorterStemmer.step1c">
+<code class="descname">step1c</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#porter.PorterStemmer.step1c" title="Permalink to this definition">¶</a></dt>
+<dd><p>step1c() turns terminal y to i when there is another vowel in the stem.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="porter.PorterStemmer.step2">
+<code class="descname">step2</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#porter.PorterStemmer.step2" title="Permalink to this definition">¶</a></dt>
+<dd><p>step2() maps double suffices to single ones.
+so -ization ( = -ize plus -ation) maps to -ize etc. note that the
+string before the suffix must give m() &gt; 0.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="porter.PorterStemmer.step3">
+<code class="descname">step3</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#porter.PorterStemmer.step3" title="Permalink to this definition">¶</a></dt>
+<dd><p>step3() dels with -ic-, -full, -ness etc. similar strategy to step2.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="porter.PorterStemmer.step4">
+<code class="descname">step4</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#porter.PorterStemmer.step4" title="Permalink to this definition">¶</a></dt>
+<dd><p>step4() takes off -ant, -ence etc., in context &lt;c&gt;vcvc&lt;v&gt;.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="porter.PorterStemmer.step5">
+<code class="descname">step5</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#porter.PorterStemmer.step5" title="Permalink to this definition">¶</a></dt>
+<dd><p>step5() removes a final -e if m() &gt; 1, and changes -ll to -l if
+m() &gt; 1.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="porter.PorterStemmer.vowelinstem">
+<code class="descname">vowelinstem</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#porter.PorterStemmer.vowelinstem" title="Permalink to this definition">¶</a></dt>
+<dd><p>vowelinstem() is TRUE &lt;=&gt; k0,...j contains a vowel</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="logic.html" title="previous chapter">logic module</a></li>
+      <li>Next: <a href="querying.html" title="next chapter">querying module</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/porter.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Giannis Papaioannou.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/porter.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

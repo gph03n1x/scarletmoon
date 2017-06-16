@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>querying module &#8212; Scarlet Moon 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="SGM module" href="SGM.html" />
+    <link rel="prev" title="porter module" href="porter.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-querying">
+<span id="querying-module"></span><h1>querying module<a class="headerlink" href="#module-querying" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="querying.ExtendedPorterStemmer">
+<em class="property">class </em><code class="descclassname">querying.</code><code class="descname">ExtendedPorterStemmer</code><a class="headerlink" href="#querying.ExtendedPorterStemmer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">core.queries.porter.PorterStemmer</span></code></p>
+<p>Extends the porter stemmer with a stem_words method.</p>
+<dl class="method">
+<dt id="querying.ExtendedPorterStemmer.stem_words">
+<code class="descname">stem_words</code><span class="sig-paren">(</span><em>words</em><span class="sig-paren">)</span><a class="headerlink" href="#querying.ExtendedPorterStemmer.stem_words" title="Permalink to this definition">¶</a></dt>
+<dd><p>stems each token in list of tokens
+:param words
+:return: list of stemmed tokens</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="querying.simple_search">
+<code class="descclassname">querying.</code><code class="descname">simple_search</code><span class="sig-paren">(</span><em>stemmer</em>, <em>token_index</em>, <em>queries</em>, <em>multi_query_mode=False</em><span class="sig-paren">)</span><a class="headerlink" href="#querying.simple_search" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default search, finds results on each token, applies logic based on the
+query then represents the results based on their tf-idf score.
+:param stemmer:
+:param token_index: tokenindex
+:param queries:
+:param multi_query_mode:
+:return:</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="querying.sort_query">
+<code class="descclassname">querying.</code><code class="descname">sort_query</code><span class="sig-paren">(</span><em>query</em>, <em>default_op=':and:'</em><span class="sig-paren">)</span><a class="headerlink" href="#querying.sort_query" title="Permalink to this definition">¶</a></dt>
+<dd><p>sorts a query based on the boolean priorities.
+:param: testing :or: not something :not: hype :or: random :not: python
+:return: [&#8216;something&#8217;, &#8216;:and:&#8217;, &#8216;testing&#8217;, &#8216;:or:&#8217;, &#8216;not&#8217;, &#8216;:or:&#8217;, &#8216;random&#8217;, &#8216;:not:&#8217;, &#8216;hype&#8217;, &#8216;:not:&#8217;, &#8216;python&#8217;]</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="porter.html" title="previous chapter">porter module</a></li>
+      <li>Next: <a href="SGM.html" title="next chapter">SGM module</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/querying.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Giannis Papaioannou.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/querying.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

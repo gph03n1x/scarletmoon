@@ -19,12 +19,12 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('..'))
-sys.path.insert(0, os.path.abspath('../core'))
-sys.path.insert(0, os.path.abspath('../core/queries'))
-sys.path.insert(0, os.path.abspath('../core/structs'))
-sys.path.insert(0, os.path.abspath('../core/parsers'))
-sys.path.insert(0, os.path.abspath('../core/ranking'))
+sys.path.insert(0, os.path.abspath('../../ScarletMoon/'))
+sys.path.insert(0, os.path.abspath('../../ScarletMoon/core'))
+sys.path.insert(0, os.path.abspath('../../ScarletMoon/core/queries'))
+sys.path.insert(0, os.path.abspath('../../ScarletMoon/core/structs'))
+sys.path.insert(0, os.path.abspath('../../ScarletMoon/core/parsers'))
+sys.path.insert(0, os.path.abspath('../../ScarletMoon/core/ranking'))
 
 
 # -- General configuration ------------------------------------------------
