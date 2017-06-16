@@ -1,20 +1,27 @@
+"""
+Using recipe found at code.activestate.com:
+
+http://code.activestate.com/recipes/134892/
+"""
 
 
-class _Getch:
+class Getch:
     """
-    http://code.activestate.com/recipes/134892/
     Gets a single character from standard input.  Does not echo to the screen.
     """
     def __init__(self):
         try:
-            self.impl = _GetchWindows()
+            self.impl = GetchWindows()
         except ImportError:
-            self.impl = _GetchUnix()
+            self.impl = GetchUnix()
 
     def __call__(self): return self.impl()
 
 
-class _GetchUnix:
+class GetchUnix:
+    """
+    Unix Implementation
+    """
     def __init__(self):
         import sys
         import tty
@@ -33,7 +40,10 @@ class _GetchUnix:
         return ch
 
 
-class _GetchWindows:
+class GetchWindows:
+    """
+    Windows implementation
+    """
     def __init__(self):
         import msvcrt
 
@@ -41,4 +51,4 @@ class _GetchWindows:
         import msvcrt
         return msvcrt.getch()
 
-getch = _Getch()
+getch = Getch()

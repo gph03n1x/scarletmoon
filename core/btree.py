@@ -6,7 +6,6 @@ class KeyNode:
     def __init__(self, key, value, term_freq):
         self.left = None
         self.right = None
-
         self.key = key
         self.freq = 1
         self.documents = {value: term_freq}

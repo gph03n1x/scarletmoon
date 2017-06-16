@@ -1,7 +1,7 @@
-query module
-============
+querying module
+===============
 
-.. automodule:: query
+.. automodule:: querying
     :members:
     :undoc-members:
     :show-inheritance:

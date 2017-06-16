@@ -4,7 +4,17 @@ from core.structs.documents import document
 
 
 def reuters_SGM_processor(file_name):
+    """
+    parses an sgm file articles into a list of documents.
+    :param file_name:
+    :return:
+    """
     def parse(article):
+        """
+        gets the title and the body of an article
+        :param article:
+        :return:
+        """
         title = ""
         body = ""
         content = article.find('text')

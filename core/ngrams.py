@@ -5,6 +5,12 @@ import itertools
 
 
 def get_n_grams(token, grams_count):
+    """
+    returns the ngrams of a token
+    :param token: ex. results
+    :param grams_count: ex. 2
+    :return: ['$r', 're', 'es', 'su', 'ul', 'lt', 'ts', 's$']
+    """
     grams = [token[i:i + grams_count] for i in range(len(token) - grams_count + 1)]
     grams.append(grams[-1][-grams_count + 1:] + "$")
     grams.insert(0, "$" + grams[0][:grams_count - 1])
@@ -12,6 +18,12 @@ def get_n_grams(token, grams_count):
 
 
 def query_combinations(parts):
+    """
+    creates a combination of all the possible queries
+    that could come out of wildcard query
+    :param parts:
+    :return:
+    """
     return list(itertools.product(*parts))
 
 
@@ -21,6 +33,11 @@ class NGramIndex:
         self.index = defaultdict(set)
 
     def index_token(self, token):
+        """
+        creates an index with the ngrams of each token.
+        :param token:
+        :return:
+        """
         try:
             ngrams = get_n_grams(token, self.length)
         except IndexError:
@@ -30,13 +47,12 @@ class NGramIndex:
             for ngram in ngrams:
                 self.index[ngram].update([token])
 
-    def token_correction(self, token):
-        pass
-
-    def get_(self, token):
-        pass
-
     def suggestions(self, ngrams):
+        """
+        gets all the common tokens from an ngram list.
+        :param ngrams:
+        :return:
+        """
         if ngrams:
             results = self.index[ngrams[0]]
             # print(results)
@@ -46,6 +62,11 @@ class NGramIndex:
         return set()
 
     def wildcard_ngrams(self, wildcard_input):
+        """
+        creates the ngrams that based on the wildcard input.
+        :param wildcard_input:
+        :return:
+        """
         ngrams = []
         token_parts = wildcard_input.split("*")
         last_part = len(token_parts)-1
@@ -68,6 +89,12 @@ class NGramIndex:
         return ngrams
 
     def post_filtering(self, wildcard_input, suggestions):
+        """
+        checks if the suggestion actually matches the wildcard query
+        :param wildcard_input:
+        :param suggestions:
+        :return:
+        """
         return [suggestion for suggestion in suggestions if fnmatch.fnmatch(suggestion, wildcard_input)]
 
 

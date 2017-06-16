@@ -20,10 +20,8 @@ Welcome to Scarlet Moon's documentation!
    logic
    ngrams
    porter
-   query
-   search
+   querying
    SGM
-   terminal
    tfidf
 
 

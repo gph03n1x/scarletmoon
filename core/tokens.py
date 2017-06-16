@@ -7,6 +7,11 @@ tokenizer_regex = re.compile('[A-Z]{2,}(?![a-z])|[A-Z][a-z]+(?=[A-Z])|[\'\w\-]+'
 
 
 def tokenizer(text):
+    """
+    Tokenizes text into tokens.
+    :param text:
+    :return:
+    """
     tokens = tokenizer_regex.findall(text)
     # filter(lambda s: len(s)>1, tokens)
     return tokens

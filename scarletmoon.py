@@ -9,7 +9,7 @@ import operator
 from core.btree import KeyTree
 from core.queries.porter import PorterStemmer
 from core.parsers.SGM import reuters_SGM_processor
-from core.queries.search import simple_search
+from core.queries.querying import simple_search
 from core.structs.categorizer import FirstLetterSplitter
 from core.ngrams import query_combinations, NGramIndex
 
@@ -145,12 +145,4 @@ while True:
 
     elif query[0] == ":exit":
         sys.exit(0)
-"""
-import asyncio
 
-def got_stdin_data(q):
-    asyncio.Async(q.put(sys.stdin.readline))
-
-q = asyncio.Queue()
-loop = asyncio.get_event_loop()
-loop.add_reader(sys.stdin, got_stdin_data, q)"""
