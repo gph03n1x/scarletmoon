@@ -3,25 +3,45 @@ import math
 
 
 class KeyNode:
-    def __init__(self, key, value, term_freq):
+    """
+    A keynode a structure that includes a term and
+    the documents this term is found along with the frequency in
+    each document and also tracks how many times this word was found.
+    """
+    def __init__(self, key, value, doc_freq, term_freq):
         self.left = None
         self.right = None
         self.key = key
-        self.freq = 1
-        self.documents = {value: term_freq}
+        self.freq = term_freq
+        self.documents = {value: doc_freq}
 
     def get_value(self):
+        """
+        returns the document identifiers where this word was found.
+        :return: set
+        """
         return set(self.documents.keys())
 
-    def update(self, value, frequency):
-        self.freq += 1
-        self.documents[value] = frequency
+    def update(self, value, doc_freq, term_freq):
+        """
+        adds a document-article identifier and the frequency this word was found there.
+        :param value:
+        :param frequency:
+        :return:
+        """
+        self.freq += term_freq
+        self.documents[value] = doc_freq
 
     def idf(self, number_of_tokens):
+        """
+        returns the idf log(N/(1+frequency))
+        :param number_of_tokens:
+        :return:
+        """
         return math.log(number_of_tokens / (1 + self.freq))
 
     def __str__(self):
-        return "Node(key={0})".format(self.key)
+        return "Node(key={0}, freq={1}, docs={2})".format(self.key, self.freq, str(self.documents))
 
     def __repr__(self):
         return str(self)
@@ -34,13 +54,25 @@ class KeyTree:
         self.size = 0
 
     def get_doc_count(self):
+        """
+        returns the count of tokens in a tree.
+        :return:
+        """
         if self.parent is None:
             return self.size
         return self.parent.count
 
-    def add(self, key, value, frequency):
+    def add(self, key, value, doc_freq, term_freq):
+        """
+        adds a document to the token-tree, along with the document frequency and the term frequency.
+        :param key:
+        :param value:
+        :param doc_freq:
+        :param term_freq:
+        :return:
+        """
         if self.root is None:
-            self.root = KeyNode(key, value, frequency)
+            self.root = KeyNode(key, value, doc_freq, term_freq)
             self.size += 1
             return
         node = self.root
@@ -50,12 +82,12 @@ class KeyTree:
                     node = node.left
                     continue
                 else:
-                    node.left = KeyNode(key, value, frequency)
+                    node.left = KeyNode(key, value, doc_freq, term_freq)
                     self.size += 1
                     break
 
             elif node.key == key:
-                node.update(value, frequency)
+                node.update(value, doc_freq, term_freq)
                 break
             else:
                 if node.right is not None:
@@ -63,11 +95,16 @@ class KeyTree:
                     continue
 
                 else:
-                    node.right = KeyNode(key, value, frequency)
+                    node.right = KeyNode(key, value, doc_freq, term_freq)
                     self.size += 1
                     break
 
     def find(self, key):
+        """
+        looks for a key-node.
+        :param key:
+        :return:
+        """
         node = self.root
         while node is not None:
             if key == node.key:
@@ -83,7 +120,10 @@ class KeyTree:
         return None
 
     def delete_tr(self):
-        # garbage collector will do this for us.
+        """
+        deletes the tree using the garbage collector
+        :return:
+        """
         self.root = None
 
     def traverse(self):

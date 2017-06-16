@@ -10,9 +10,9 @@ from core.ngrams import NGramIndex
 from core.parsers.SGM import reuters_SGM_processor
 
 parser = argparse.ArgumentParser(description='Scans folders for documents')
-parser.add_argument('-f', '--filter')
-parser.add_argument('-d', '--directory')
-parser.add_argument('-o', '--output')
+parser.add_argument('-f', '--filter', required=True)
+parser.add_argument('-d', '--directory', required=True)
+parser.add_argument('-o', '--output', required=True)
 
 args = parser.parse_args()
 

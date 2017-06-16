@@ -6,6 +6,12 @@ from core.queries.porter import PorterStemmer
 
 class document:
     def __init__(self, doc_name, title, text):
+        """
+        tokenizes the document, counts the occurances of each token,
+        :param doc_name:
+        :param title:
+        :param text:
+        """
         pts = PorterStemmer()
         self.doc_name = doc_name
         self.title = title

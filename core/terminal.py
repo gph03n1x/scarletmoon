@@ -2,6 +2,10 @@ from core.getch import getch
 import os
 
 def clear_console():
+    """
+    calls cls for windows, clear for gnu/linux systems
+    :return:
+    """
     if os.name == 'nt':
         os.system("cls")
     else:
@@ -9,6 +13,13 @@ def clear_console():
 
 
 def show_results(results, message=None, menu=True):
+    """
+    prints results along with information messages and menu
+    :param results:
+    :param message:
+    :param menu:
+    :return:
+    """
     clear_console()
     for result in results:
         print("[*] Article :" + result[0]["article"].strip())
@@ -25,6 +36,12 @@ def show_results(results, message=None, menu=True):
 
 
 def results_menu(results):
+    """
+    menu results functionality shows next results when pressing n
+    previous results when pressing p and exits the results screen when pressing q
+    :param results:
+    :return:
+    """
 
     results_per_page = 5
     point = 0
