@@ -47,22 +47,34 @@
 <span id="btree-module"></span><h1>btree module<a class="headerlink" href="#module-btree" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="btree.KeyNode">
-<em class="property">class </em><code class="descclassname">btree.</code><code class="descname">KeyNode</code><span class="sig-paren">(</span><em>key</em>, <em>value</em>, <em>term_freq</em><span class="sig-paren">)</span><a class="headerlink" href="#btree.KeyNode" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">btree.</code><code class="descname">KeyNode</code><span class="sig-paren">(</span><em>key</em>, <em>value</em>, <em>doc_freq</em>, <em>term_freq</em><span class="sig-paren">)</span><a class="headerlink" href="#btree.KeyNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>A keynode a structure that includes a term and
+the documents this term is found along with the frequency in
+each document and also tracks how many times this word was found.</p>
 <dl class="method">
 <dt id="btree.KeyNode.get_value">
 <code class="descname">get_value</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#btree.KeyNode.get_value" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>returns the document identifiers where this word was found.
+:return: set</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="btree.KeyNode.idf">
 <code class="descname">idf</code><span class="sig-paren">(</span><em>number_of_tokens</em><span class="sig-paren">)</span><a class="headerlink" href="#btree.KeyNode.idf" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>returns the idf log(N/(1+frequency))
+:param number_of_tokens:
+:return:</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="btree.KeyNode.update">
-<code class="descname">update</code><span class="sig-paren">(</span><em>value</em>, <em>frequency</em><span class="sig-paren">)</span><a class="headerlink" href="#btree.KeyNode.update" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="descname">update</code><span class="sig-paren">(</span><em>value</em>, <em>doc_freq</em>, <em>term_freq</em><span class="sig-paren">)</span><a class="headerlink" href="#btree.KeyNode.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>adds a document-article identifier and the frequency this word was found there.
+:param value:
+:param frequency:
+:return:</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -72,23 +84,36 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <dl class="method">
 <dt id="btree.KeyTree.add">
-<code class="descname">add</code><span class="sig-paren">(</span><em>key</em>, <em>value</em>, <em>frequency</em><span class="sig-paren">)</span><a class="headerlink" href="#btree.KeyTree.add" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="descname">add</code><span class="sig-paren">(</span><em>key</em>, <em>value</em>, <em>doc_freq</em>, <em>term_freq</em><span class="sig-paren">)</span><a class="headerlink" href="#btree.KeyTree.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>adds a document to the token-tree, along with the document frequency and the term frequency.
+:param key:
+:param value:
+:param doc_freq:
+:param term_freq:
+:return:</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="btree.KeyTree.delete_tr">
 <code class="descname">delete_tr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#btree.KeyTree.delete_tr" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>deletes the tree using the garbage collector
+:return:</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="btree.KeyTree.find">
 <code class="descname">find</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="headerlink" href="#btree.KeyTree.find" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>looks for a key-node.
+:param key:
+:return:</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="btree.KeyTree.get_doc_count">
 <code class="descname">get_doc_count</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#btree.KeyTree.get_doc_count" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>returns the count of tokens in a tree.
+:return:</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="btree.KeyTree.traverse">

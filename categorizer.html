@@ -49,31 +49,38 @@
 <dt id="categorizer.FirstLetterSplitter">
 <em class="property">class </em><code class="descclassname">categorizer.</code><code class="descname">FirstLetterSplitter</code><span class="sig-paren">(</span><em>structure</em>, <em>ngram_index</em><span class="sig-paren">)</span><a class="headerlink" href="#categorizer.FirstLetterSplitter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p>A tree per letter, digit, misc.</p>
+<p>Creates a token-tree per letter to categorize tokens based on the first letter of each token.
+There is a tree for every letter, every digit, and a misc tree for everything else.</p>
 <dl class="method">
 <dt id="categorizer.FirstLetterSplitter.find">
 <code class="descname">find</code><span class="sig-paren">(</span><em>token</em><span class="sig-paren">)</span><a class="headerlink" href="#categorizer.FirstLetterSplitter.find" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="categorizer.FirstLetterSplitter.save">
-<code class="descname">save</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#categorizer.FirstLetterSplitter.save" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>looks for a token key-node
+:param token:
+:return:</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="categorizer.FirstLetterSplitter.size">
 <code class="descname">size</code><span class="sig-paren">(</span><em>category=None</em><span class="sig-paren">)</span><a class="headerlink" href="#categorizer.FirstLetterSplitter.size" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>gets the size of the token-trees
+:param category:
+:return:</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="categorizer.FirstLetterSplitter.traverse">
 <code class="descname">traverse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#categorizer.FirstLetterSplitter.traverse" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>traversing through every token-tree. Expensive on memory.
+:return:</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="categorizer.FirstLetterSplitter.update_tree">
 <code class="descname">update_tree</code><span class="sig-paren">(</span><em>document</em><span class="sig-paren">)</span><a class="headerlink" href="#categorizer.FirstLetterSplitter.update_tree" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>updates the tree with a new document.
+:param document:
+:return:</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="categorizer.FirstLetterSplitter.visualize_tree">
