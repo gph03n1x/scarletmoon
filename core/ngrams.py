@@ -72,7 +72,8 @@ class NGramIndex:
         last_part = len(token_parts)-1
 
         for enum, part in enumerate(wildcard_input.split("*")):
-            if part:
+            if part and len(part) >= self.length:
+
                 part_ngrams = get_n_grams(part, self.length)
 
                 if enum != last_part:

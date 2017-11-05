@@ -66,10 +66,6 @@ class FirstLetterSplitter:
         """
         return self[token].find(token)
 
-    def visualize_tree(self):
-        for key in self.structs:
-            self.structs[key].visualizeTree(key)
-
     def size(self, category=None):
         """
         gets the size of the token-trees

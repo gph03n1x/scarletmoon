@@ -4,7 +4,6 @@ import gc
 import re
 import pickle
 import heapq
-import asyncio
 import operator
 from core.btree import KeyTree
 from core.queries.porter import PorterStemmer
@@ -18,12 +17,14 @@ try:
         print("[*] Loading pickle file")
         td = pickle.load(pickle_file)
 except IOError:
+    # TODO: ask the user to input tokentree
     print("[-] Creating a new inverted index")
     td = FirstLetterSplitter(KeyTree, NGramIndex(2))
 
-
+# TODO: comment the scarletmoon.py, scan.py
 pts = PorterStemmer()
 print("[*] Type :help to show the help screen")
+
 
 while True:
     original_query = input("# ").lower()
@@ -87,7 +88,6 @@ while True:
         elif query[0] == ":load":
             match = original_query.replace(":load ", "")
             print("[*] Parsing: " + match)
-            # TODO: optimize parsing maybe
             parsed_articles = reuters_SGM_processor(match)
             print("[*] Adding:  " + match)
             for parsed_article in parsed_articles:

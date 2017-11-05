@@ -137,23 +137,3 @@ class KeyTree:
             if node.right:
                 queue.append(node.right)
         return nodes
-
-    def visualize_tree(self, key):
-        # TODO: Improve visualization
-        if self.root is not None:
-            thislevel = [self.root]
-            a = '                                                             '
-            f = open("debug/output-" + key + ".txt", "w")
-            while thislevel:
-                nextlevel = []
-                # print(len(a)/2)
-                a = a[:int(len(a)/2)]
-                for n in thislevel:
-                    f.write(a + ' ' + str(n))
-                    if n.left:
-                        nextlevel.append(n.left)
-                    if n.right:
-                        nextlevel.append(n.right)
-
-                thislevel = nextlevel
-                f.write("\n")
