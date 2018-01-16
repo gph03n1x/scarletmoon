@@ -1,0 +1,63 @@
+#!/usr/bin/python
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+
+class ScarletHandler(BaseHTTPRequestHandler):
+    """
+    Code from my spatial data project
+    https://github.com/gph03n1x/Rend
+    """
+    def __init__(self, *args, **kwargs):
+        super(ScarletHandler, self).__init__(*args, **kwargs)
+
+    def _set_headers(self):
+        """
+        Sends 200 response and html content headers
+        :return:
+        """
+        self.send_response(200)
+        self.send_header('Content-type', 'text/html')
+        self.end_headers()
+
+    def do_GET(self):
+        """
+        Sends the .ico image and handle the action request in
+        the get request.
+        :return:
+        """
+        self._set_headers()
+
+        if self.path.endswith("/"):
+            self.path = self.path[:-1]
+
+        #if self.path.endswith(".ico"):
+        #    with open("images/icon.png", "rb") as ifp:
+        #        self.wfile.write(ifp.read())
+        else:
+            action, params = self.path[1:].split("/", 1)
+            d = {}
+            for param in params.split("/"):
+                key, value = param.split("=")
+                d[key] = int(value)
+
+            if action in self.server.allowed_actions:
+                results = self.server.spatial_index.action(action, d)
+                self.wfile.write(str(results).encode())
+
+
+
+
+
+def make_http_server(token_tree, port, server_class=HTTPServer):
+    """
+    Creates and httpd server daemon and returns it.
+    :param spatial_index:
+    :param port:
+    :param server_class:
+    :return:
+    """
+    server_address = ('', port)
+    httpd = server_class(server_address, ScarletHandler)
+    httpd.token_tree = token_tree
+    httpd.allowed_actions = ["query", "suggest", "frequency", "size"]
+    return httpd
