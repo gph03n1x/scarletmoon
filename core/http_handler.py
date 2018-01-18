@@ -1,6 +1,8 @@
 #!/usr/bin/python
 from http.server import BaseHTTPRequestHandler, HTTPServer
-
+from core.ngrams import query_combinations
+from core.queries.querying import simple_search
+import re
 
 class ScarletHandler(BaseHTTPRequestHandler):
     """
@@ -30,25 +32,58 @@ class ScarletHandler(BaseHTTPRequestHandler):
         if self.path.endswith("/"):
             self.path = self.path[:-1]
 
-        #if self.path.endswith(".ico"):
-        #    with open("images/icon.png", "rb") as ifp:
-        #        self.wfile.write(ifp.read())
+        self.display_query_form()
+
+
+    def do_POST(self):
+        request_headers = self.headers
+
+        content_length = request_headers.get_all("content-length")
+
+        length = int(content_length[0]) if content_length else 0
+
+        original_query = str(self.rfile.read(length))[8:-1] # removes b'query= and the trailing '
+        # TODO: ['hurricane+%3Aand%3A+sugar'] should be hurricane :and: sugar
+
+        print(original_query)
+
+        query = [part for part in re.split('\s+', original_query) if part]
+        if "*" in original_query:
+            parts = []
+            for token in query:
+                if "*" in token:
+                    wn = self.server.td.ngram_index.wildcard_ngrams(token)
+                    unfiltered_results = self.server.td.ngram_index.suggestions(wn)
+                    filtered_results = self.server.td.ngram_index.post_filtering(token, unfiltered_results)
+                    print(filtered_results)
+                    parts.append(filtered_results)
+                else:
+                    parts.append([token])
+            queries = query_combinations(parts)
+            results = simple_search(self.server.pts, self.server.td, queries, multi_query_mode=True, use_terminal = False)
+
         else:
-            action, params = self.path[1:].split("/", 1)
-            d = {}
-            for param in params.split("/"):
-                key, value = param.split("=")
-                d[key] = int(value)
+            print(query)
+            results = simple_search(self.server.pts, self.server.td, query, use_terminal = False)
 
-            if action in self.server.allowed_actions:
-                results = self.server.spatial_index.action(action, d)
-                self.wfile.write(str(results).encode())
+        self._set_headers()
+        self.wfile.write(str(results).encode())
+
+    def display_query_form(self):
+        self.wfile.write("""
+                <html>
+                    <body>
+                        <form method="post">
+                            <input name='query' />
+                            <input type='submit' />
+                        </form>
+                    </body>
+                </html>
+                """.encode())
 
 
 
-
-
-def make_http_server(token_tree, port, server_class=HTTPServer):
+def make_http_server(token_tree, pts, port, server_class=HTTPServer):
     """
     Creates and httpd server daemon and returns it.
     :param spatial_index:
@@ -58,6 +93,7 @@ def make_http_server(token_tree, port, server_class=HTTPServer):
     """
     server_address = ('', port)
     httpd = server_class(server_address, ScarletHandler)
-    httpd.token_tree = token_tree
+    httpd.td= token_tree
+    httpd.pts = pts
     httpd.allowed_actions = ["query", "suggest", "frequency", "size"]
     return httpd

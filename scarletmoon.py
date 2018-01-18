@@ -5,27 +5,40 @@ import re
 import pickle
 import heapq
 import operator
+import argparse
 from core.btree import KeyTree
 from core.queries.porter import PorterStemmer
 from core.parsers.SGM import reuters_SGM_processor
 from core.queries.querying import simple_search
 from core.structs.categorizer import FirstLetterSplitter
 from core.ngrams import query_combinations, NGramIndex
+pts = PorterStemmer()
+
+parser = argparse.ArgumentParser(description="Scarlet moon")
+parser.add_argument("-p", "--port", type=int)
+parser.add_argument("-i", "--index", default="storage/tokentree.pickle")
+args = parser.parse_args()
 
 try:
-    with open("storage/tokentree.pickle", 'rb') as pickle_file:
+    with open(args.index, 'rb') as pickle_file:
         print("[*] Loading pickle file")
         td = pickle.load(pickle_file)
 except IOError:
-    # TODO: ask the user to input tokentree
     print("[-] Creating a new inverted index")
     td = FirstLetterSplitter(KeyTree, NGramIndex(2))
 
-# TODO: comment the scarletmoon.py, scan.py
-pts = PorterStemmer()
+
+
+
+if args.port:
+    print("server")
+    from core.http_handler import make_http_server
+    httpd = make_http_server(td, pts, args.port)
+    httpd.serve_forever()
+    sys.exit()
+
+
 print("[*] Type :help to show the help screen")
-
-
 while True:
     original_query = input("# ").lower()
 

@@ -48,7 +48,7 @@ class ExtendedPorterStemmer(PorterStemmer):
         return [self.stem(word, 0, len(word)-1) for word in words]
 
 
-def simple_search(stemmer, token_index, queries, multi_query_mode=False):
+def simple_search(stemmer, token_index, queries, multi_query_mode=False, use_terminal=True):
     """
     Default search, finds results on each token, applies logic based on the
     query then represents the results based on their tf-idf score.
@@ -108,9 +108,12 @@ def simple_search(stemmer, token_index, queries, multi_query_mode=False):
         results = tf_idf.calc_tf_idf(total_results)
         results =  [(token_index.identifier.retrieve(result), results[result]) for result in results]
 
+
         if results is not None and len(results) > 0:
-
-            results_menu(sorted(results, key=operator.itemgetter(1), reverse=True))
-
+            if use_terminal:
+                results_menu(sorted(results, key=operator.itemgetter(1), reverse=True))
+            else:
+                return results
         else:
             print("[-] No results found")
+            return []
