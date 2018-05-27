@@ -2,7 +2,7 @@
 import heapq
 import operator
 
-from core.queries.porter import PorterStemmer
+from vendor.porter import PorterStemmer
 from core.ranking.tfidf import results_tfidf
 from core.queries.logic import intersect, union, exempt
 from core.terminal import results_menu

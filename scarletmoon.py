@@ -7,7 +7,7 @@ import heapq
 import operator
 import argparse
 from core.btree import KeyTree
-from core.queries.porter import PorterStemmer
+from vendor.porter import PorterStemmer
 from core.parsers.SGM import reuters_SGM_processor
 from core.queries.querying import simple_search
 from core.structs.categorizer import FirstLetterSplitter
@@ -162,4 +162,3 @@ while True:
         print("[-] Bad query.")
         print("[-] Error:")
         print(exc)
-
