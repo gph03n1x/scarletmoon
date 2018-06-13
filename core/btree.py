@@ -26,7 +26,8 @@ class KeyNode:
         """
         adds a document-article identifier and the frequency this word was found there.
         :param value:
-        :param frequency:
+        :param doc_freq:
+        :param term_freq:
         :return:
         """
         self.freq += term_freq
@@ -47,10 +48,26 @@ class KeyNode:
         return str(self)
 
     def get_next(self, key):
+        """
+        :param key:
+        :return:
+        """
         if key < self.key:
-            return self.left
+            return self.left, self
         return self.right, self
 
+    def set_children(self, key, value, doc_freq, term_freq):
+        """
+        :param key:
+        :param value:
+        :param doc_freq:
+        :param term_freq:
+        :return:
+        """
+        if key < self.key:
+            self.left = KeyNode(key, value, doc_freq, term_freq)
+        else:
+            self.right = KeyNode(key, value, doc_freq, term_freq)
 
 
 class KeyTree:
@@ -81,31 +98,19 @@ class KeyTree:
             self.root = KeyNode(key, value, doc_freq, term_freq)
             self.size += 1
             return
+
         node = self.root
         while True:
 
-
-            if key < node.key:
-                if node.left is not None:
-                    node = node.left
-                    continue
-                else:
-                    node.left = KeyNode(key, value, doc_freq, term_freq)
-                    self.size += 1
-                    break
-
-            elif node.key == key:
+            if node.key == key:
                 node.update(value, doc_freq, term_freq)
                 break
-            else:
-                if node.right is not None:
-                    node = node.right
-                    continue
 
-                else:
-                    node.right = KeyNode(key, value, doc_freq, term_freq)
-                    self.size += 1
-                    break
+            node, parent = node.get_next(key)
+
+            if not node:
+                parent.set_children(key, value, doc_freq, term_freq)
+                break
 
     def find(self, key):
         """
