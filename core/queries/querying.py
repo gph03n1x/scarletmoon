@@ -5,12 +5,17 @@ import operator
 from core.queries.porter import PorterStemmer
 from core.ranking.tfidf import results_tfidf
 from core.queries.logic import intersect, union, exempt
-from core.terminal import results_menu
 
 priorities = {
     ":and:": 1,
     ":or:": 1,
     ":not:": 2
+}
+
+operations = {
+    ":and:": intersect,
+    ":or:": union,
+    ":not:": exempt
 }
 
 
@@ -32,7 +37,7 @@ def sort_query(query, default_op=":and:"):
             selected_priority = priorities[default_op]
             selected_operation = default_op
 
-    return " ".join([heapq.heappop(heap)[1] for _iteration in range(len(heap))]).split(" ", 1)[1].split()
+    return " ".join([heapq.heappop(heap)[1] for _ in range(len(heap))]).split(" ", 1)[1].split()
 
 
 class ExtendedPorterStemmer(PorterStemmer):
@@ -48,7 +53,7 @@ class ExtendedPorterStemmer(PorterStemmer):
         return [self.stem(word, 0, len(word)-1) for word in words]
 
 
-def simple_search(stemmer, token_index, queries, multi_query_mode=False, use_terminal=True):
+def simple_search(stemmer, token_index, queries):
     """
     Default search, finds results on each token, applies logic based on the
     query then represents the results based on their tf-idf score.
@@ -62,8 +67,10 @@ def simple_search(stemmer, token_index, queries, multi_query_mode=False, use_ter
     tf_idf = results_tfidf()
     total_results = set()
     operation = intersect
-
-    if not multi_query_mode:
+    print(queries)
+    print(isinstance(queries, str))
+    if isinstance(queries, str):
+        print("huh")
         queries = [queries]
 
     for query in queries:
@@ -105,15 +112,13 @@ def simple_search(stemmer, token_index, queries, multi_query_mode=False, use_ter
             total_results.update(results)
 
     else:
+        print(total_results)
         results = tf_idf.calc_tf_idf(total_results)
-        results =  [(token_index.identifier.retrieve(result), results[result]) for result in results]
-
+        results = [(token_index.identifier.retrieve(result), results[result]) for result in results]
+        print(results)
 
         if results is not None and len(results) > 0:
-            if use_terminal:
-                results_menu(sorted(results, key=operator.itemgetter(1), reverse=True))
-            else:
-                return results
+            return sorted(results, key=operator.itemgetter(1), reverse=True)
         else:
             print("[-] No results found")
             return []
