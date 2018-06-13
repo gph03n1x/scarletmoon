@@ -19,7 +19,7 @@ operations = {
 }
 
 
-def sort_query(query, default_op=":and:"):
+def sort_query(query, default_op=":or:"):
     """
     sorts a query based on the boolean priorities.
     :param: testing :or: not something :not: hype :or: random :not: python
@@ -63,15 +63,9 @@ def simple_search(stemmer, token_index, queries):
     :param multi_query_mode:
     :return:
     """
-    # TODO: Improve search with info in case a word doesnt existx
     tf_idf = results_tfidf()
     total_results = set()
     operation = intersect
-    print(queries)
-    print(isinstance(queries, str))
-    if isinstance(queries, str):
-        print("huh")
-        queries = [queries]
 
     for query in queries:
         query = sort_query(query)
@@ -88,31 +82,27 @@ def simple_search(stemmer, token_index, queries):
             results = query_result.get_value()
 
         for enum, query_part in enumerate(query[1:]):
+
+
+            if query_part.lower() in operations.keys():
+                operation = operations[query_part]
+                continue
+
             query_part = stemmer.stem(query_part, 0, len(query_part) - 1)
-
-            if query_part.lower() == ":or:":
-                operation = union
-
-            if query_part.lower() == ":not:":
-                operation = exempt
-
+            try:
+                query_result, idf = token_index.find(query_part)
+            except TypeError:
+                pass
             else:
-                if len(query_part) > 0:
-                    try:
-                        query_result, idf = token_index.find(query_part)
-                    except TypeError:
-                        pass
-                    else:
-                        tf_idf.add_idf(idf, query_part)
-                        tf_idf.add_documents(query_result)
+                tf_idf.add_idf(idf, query_part)
+                tf_idf.add_documents(query_result)
 
-                        results = operation(results, query_result.get_value())
+                results = operation(results, query_result.get_value())
 
         if results is not None:
             total_results.update(results)
 
     else:
-        print(total_results)
         results = tf_idf.calc_tf_idf(total_results)
         results = [(token_index.identifier.retrieve(result), results[result]) for result in results]
         print(results)
@@ -120,5 +110,4 @@ def simple_search(stemmer, token_index, queries):
         if results is not None and len(results) > 0:
             return sorted(results, key=operator.itemgetter(1), reverse=True)
         else:
-            print("[-] No results found")
             return []

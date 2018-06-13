@@ -6,7 +6,7 @@ import heapq
 import operator
 import json
 from core.btree import KeyTree
-from core.queries.porter import PorterStemmer
+from vendor.porter import PorterStemmer
 from core.parsers.SGM import reuters_SGM_processor
 from core.queries.querying import simple_search
 from core.structs.categorizer import FirstLetterSplitter
@@ -48,10 +48,10 @@ def text_search():
                 parts.append([token])
 
         queries = query_combinations(parts)
-        return Response(simple_search(pts, td, queries))
+        return Response(json.dumps(simple_search(pts, td, queries)), status=200, mimetype='application/json')
 
     else:
-        return Response(simple_search(pts, td, query))
+        return Response(json.dumps(simple_search(pts, td, [query])), status=200, mimetype='application/json')
 
 
 @app.route("/stats", methods=['GET'])

@@ -77,6 +77,8 @@ class KeyTree:
             return
         node = self.root
         while True:
+
+
             if key < node.key:
                 if node.left is not None:
                     node = node.left
@@ -109,10 +111,10 @@ class KeyTree:
         while node is not None:
             if key == node.key:
                 return node, node.idf(self.get_doc_count())
-            elif key < node.key and node.left is not None:
+            elif key < node.key:
                 node = node.left
                 continue
-            elif key > node.key and node.right is not None:
+            elif key > node.key:
                 node = node.right
                 continue
             else:
