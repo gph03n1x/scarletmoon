@@ -46,6 +46,12 @@ class KeyNode:
     def __repr__(self):
         return str(self)
 
+    def get_next(self, key):
+        if key < self.key:
+            return self.left
+        return self.right, self
+
+
 
 class KeyTree:
     def __init__(self, parent=None):
@@ -108,17 +114,11 @@ class KeyTree:
         :return:
         """
         node = self.root
-        while node is not None:
+        while node:
             if key == node.key:
                 return node, node.idf(self.get_doc_count())
-            elif key < node.key:
-                node = node.left
-                continue
-            elif key > node.key:
-                node = node.right
-                continue
-            else:
-                break
+            node, _ = node.get_next(key)
+
         return None
 
     def delete_tr(self):
