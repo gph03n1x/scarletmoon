@@ -1,7 +1,7 @@
 #!/usr/bin/python
 from collections import Counter
 from core.tokens import tokenizer
-from core.queries.porter import PorterStemmer
+from vendor.porter import PorterStemmer
 
 
 class document:
