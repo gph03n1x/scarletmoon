@@ -8,9 +8,7 @@ from sqlalchemy import create_engine
 engine = create_engine('sqlite:///db.sqlite', echo=True)
 Base = declarative_base()
 Base.metadata.bind = engine
-Session = sessionmaker()
-Session.configure(bind=engine)
-session = Session()
+
 
 
 class TextSource(Base):
@@ -24,16 +22,23 @@ class TextSource(Base):
 
 
 def assign(document, article):
+    Session = sessionmaker()
+    Session.configure(bind=engine)
+    session = Session()
     text_source = TextSource(document=document, article=article)
     session.add(text_source)
     session.flush()
     session.refresh(text_source)
     # refresh updates given object in the session with its state in the DB
     # (and can also only refresh certain attributes - search for documentation)
+    session.commit()
     return text_source.id
 
 
 def retrieve(text_source_id):
+    Session = sessionmaker()
+    Session.configure(bind=engine)
+    session = Session()
     query = session.query(TextSource).filter(TextSource.id == text_source_id)
     _row = query.first()
     return _row.document, _row.article

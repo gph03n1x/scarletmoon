@@ -17,7 +17,7 @@ from core.ngrams import query_combinations, NGramIndex
 from flask import Flask, request, Response
 
 
-STORAGE = "storage/tokentree.pickle"
+STORAGE = "storage/5PGV96KAE4IO.pickle"
 app = Flask(__name__)
 pts = PorterStemmer()
 
