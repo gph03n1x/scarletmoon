@@ -2,10 +2,10 @@
 import heapq
 import operator
 
-from vendor.porter import PorterStemmer
-from core.ranking.tfidf import results_tfidf
-from core.queries.logic import intersect, union, exempt
 from core.identifier import retrieve_by_id
+from core.queries.logic import exempt, intersect, union
+from core.ranking.tfidf import results_tfidf
+from vendor.porter import PorterStemmer
 
 priorities = {
     "#and#": 1,

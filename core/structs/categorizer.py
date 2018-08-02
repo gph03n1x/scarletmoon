@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import string
+
 from core.identifier import assign
 
 

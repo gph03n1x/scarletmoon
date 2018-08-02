@@ -3,8 +3,8 @@
 import abc
 import fnmatch
 import importlib
-import re
 import os
+import re
 
 MODULE_NAME_RE = re.compile('[a-z][a-z0-9_]*', re.IGNORECASE)
 

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 from bs4 import BeautifulSoup
-from core.structs.documents import document
 from core.parsers import parser
+from core.structs.documents import document
 
 
 class ReutersSGMParser(parser.PluginParser):

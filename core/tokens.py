@@ -1,7 +1,6 @@
 #!/usr/bin/python
 import re
 
-
 tokenizer_regex = re.compile('[A-Z]{2,}(?![a-z])|[A-Z][a-z]+(?=[A-Z])|[\'\w\-]+',
                              re.MULTILINE)
 

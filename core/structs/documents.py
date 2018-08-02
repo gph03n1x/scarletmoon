@@ -1,5 +1,6 @@
 #!/usr/bin/python
 from collections import Counter
+
 from core.tokens import tokenizer
 from vendor.porter import PorterStemmer
 

@@ -1,13 +1,14 @@
 #!/usr/bin/python
-import os
-import time
-import fnmatch
 import argparse
+import fnmatch
+import os
 import pickle
-from core.structs.categorizer import FirstLetterSplitter
+import time
+
 from core.btree import KeyTree
 from core.ngrams import NGramIndex
 from core.parsers.parser import PluginsSeeker
+from core.structs.categorizer import FirstLetterSplitter
 
 parser = argparse.ArgumentParser(description='Scans folders for documents')
 parser.add_argument('-f', '--filter', required=True)
@@ -16,13 +17,11 @@ parser.add_argument('-o', '--output', required=True)
 
 args = parser.parse_args()
 
-matches = [ os.path.join(args.directory, document) for document in os.listdir(args.directory)
-    if fnmatch.fnmatch(document, args.filter) ]
-
+matches = [os.path.join(args.directory, document) for document in os.listdir(args.directory)
+    if fnmatch.fnmatch(document, args.filter)]
 
 td = FirstLetterSplitter(KeyTree, NGramIndex(2))
 PluginsSeeker.load_core_plugins()
-
 
 start_time = time.time()
 for match in matches:
@@ -33,10 +32,8 @@ for match in matches:
     for parsed_article in parsed_articles:
         td.update_tree(parsed_article)
 
-
 print("[+] Parsing complete")
 print("[*] Time elapsed : "+str(time.time()-start_time))
-
 
 print("[*] Dumping tokentree")
 with open("storage/" + args.output + ".pickle", 'wb') as pickle_file:

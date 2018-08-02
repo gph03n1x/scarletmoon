@@ -1,20 +1,20 @@
 #!/usr/bin/python
-import sys
-import re
-import pickle
 import heapq
-import operator
 import json
+import operator
+import pickle
 import random
+import re
 import string
+import sys
+
 from core.btree import KeyTree
-from vendor.porter import PorterStemmer
+from core.ngrams import NGramIndex, query_combinations
 from core.parsers.parser import PluginsSeeker
 from core.queries.querying import simple_search
 from core.structs.categorizer import FirstLetterSplitter
-from core.ngrams import query_combinations, NGramIndex
-
-from flask import Flask, request, Response, redirect
+from flask import Flask, Response, redirect, request
+from vendor.porter import PorterStemmer
 
 if len(sys.argv) > 2:
     STORAGE = "{0}".format(sys.argv[2])
@@ -132,4 +132,3 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         with open(STORAGE, 'wb') as pickle_file:
             pickle.dump(td, pickle_file)
-

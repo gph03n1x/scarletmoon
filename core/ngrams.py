@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import fnmatch
-from collections import defaultdict
 import itertools
+from collections import defaultdict
 
 
 def get_n_grams(token, grams_count):

@@ -1,10 +1,10 @@
 #!/usr/bin/python
 import hashlib
-from sqlalchemy.ext.declarative import declarative_base
+
 import sqlalchemy.exc
+from sqlalchemy import Column, Integer, String, create_engine
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import Column, Integer, String
-from sqlalchemy import create_engine
 
 # check if db exists
 engine = create_engine('sqlite:///db.sqlite', echo=True)
