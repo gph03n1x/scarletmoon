@@ -4,9 +4,8 @@ Implemented with python 3.6.0
 
 ### Dependencies
 
-This project uses beautiful soup 4 for sgm parsing .
 ```bash
-pip install beautifulsoup4
+pip install -r requirements.txt
 ```
 
 ### Adding documents

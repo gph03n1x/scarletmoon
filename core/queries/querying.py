@@ -5,25 +5,26 @@ import operator
 from vendor.porter import PorterStemmer
 from core.ranking.tfidf import results_tfidf
 from core.queries.logic import intersect, union, exempt
+from core.identifier import retrieve
 
 priorities = {
-    ":and:": 1,
-    ":or:": 1,
-    ":not:": 2
+    "#and#": 1,
+    "#or#": 1,
+    "#not#": 2
 }
 
 operations = {
-    ":and:": intersect,
-    ":or:": union,
-    ":not:": exempt
+    "#and#": intersect,
+    "#or#": union,
+    "#not#": exempt
 }
 
 
-def sort_query(query, default_op=":or:"):
+def sort_query(query, default_op="#or#"):
     """
     sorts a query based on the boolean priorities.
-    :param: testing :or: not something :not: hype :or: random :not: python
-    :return: ['something', ':and:', 'testing', ':or:', 'not', ':or:', 'random', ':not:', 'hype', ':not:', 'python']
+    :param: testing #or# not something #not# hype #or# random #not# python
+    :return: ['something', '#and#', 'testing', '#or#', 'not', '#or#', 'random', '#not#', 'hype', '#not#', 'python']
     """
     selected_priority = priorities[default_op]
     selected_operation = default_op
@@ -104,7 +105,7 @@ def simple_search(stemmer, token_index, queries):
 
     else:
         results = tf_idf.calc_tf_idf(total_results)
-        results = [(token_index.identifier.retrieve(result), results[result]) for result in results]
+        results = [(retrieve(result), results[result]) for result in results]
         print(results)
 
         if results is not None and len(results) > 0:

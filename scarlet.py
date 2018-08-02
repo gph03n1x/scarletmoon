@@ -5,18 +5,24 @@ import pickle
 import heapq
 import operator
 import json
+import random
+import string
 from core.btree import KeyTree
 from vendor.porter import PorterStemmer
-from core.parsers.SGM import reuters_SGM_processor
+from core.parsers.parser import PluginsSeeker
 from core.queries.querying import simple_search
 from core.structs.categorizer import FirstLetterSplitter
 from core.ngrams import query_combinations, NGramIndex
 
 from flask import Flask, request, Response
 
+
 STORAGE = "storage/tokentree.pickle"
 app = Flask(__name__)
 pts = PorterStemmer()
+
+PluginsSeeker.load_core_plugins()
+print(PluginsSeeker.plugins)
 
 
 try:
@@ -25,13 +31,15 @@ try:
         td = pickle.load(pickle_file)
 except IOError:
     print("[-] Creating a new inverted index")
+    name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(12))
+    STORAGE = "storage/{0}.pickle".format(name)
     td = FirstLetterSplitter(KeyTree, NGramIndex(2))
 
 
 @app.route("/search", methods=['GET'])
 def text_search():
     original_query = request.args.get('query').lower()
-    # TODO: simple search is bugged atm, fix later
+    # TODO: simple search is bugged atm, fix later due to using ':'
     query = [part for part in re.split('\s+', original_query) if part]
 
     if "*" in original_query:
@@ -70,14 +78,20 @@ def scarlet_stats():
     return Response(json.dumps(json_response), status=200, mimetype='application/json')
 
 
-@app.route("/index", methods=['GET'])
+@app.route("/index", methods=['POST'])
 def index_data():
-    match = request.args.get('file').lower()
+    print(request.data)
+    match = request.get_json().get('filename')
     print("[*] Parsing: " + match)
-    parsed_articles = reuters_SGM_processor(match)
+    handler = PluginsSeeker.find_handler(match)
+    parsed_articles = handler.parse_document(match)
     print("[*] Adding:  " + match)
     for parsed_article in parsed_articles:
         td.update_tree(parsed_article)
+    # need to store token tree again
+    with open(STORAGE, 'wb') as pickle_file:
+        pickle.dump(td, pickle_file)
+    return Response(json.dumps({"status": 200}))
 
 
 @app.route("/suggest", methods=['GET'])

@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import string
-from core.identifier import Identifier
+from core.identifier import assign
+
 
 class FirstLetterSplitter:
     """
@@ -12,7 +13,6 @@ class FirstLetterSplitter:
         self.ngram_index = ngram_index
         self.structs = {}
         self.count = 0
-        self.identifier = Identifier()
         for letter in string.ascii_lowercase:
             self.structs[letter] = structure(self)
         for digit in string.digits:
@@ -37,7 +37,7 @@ class FirstLetterSplitter:
         :return:
         """
         tokens = document.frequencies
-        id = self.identifier.assign(*document.identifier())
+        id = assign(*document.identifier())
         for token in tokens:
             self.count += 1
             doc_freq = tokens[token] / document.total_tokens

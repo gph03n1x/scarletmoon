@@ -1,25 +1,44 @@
 #!/usr/bin/python
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import Column, Integer, String
+from sqlalchemy import create_engine
 
-class Identifier:
-    """
-    Article Identifier
-    Assigns a id kinda like sql auto increment works.
-    """
-    def __init__(self):
-        self.ids = []
-        self.current_id = 0
+# check if db exists
+engine = create_engine('sqlite:///db.sqlite', echo=True)
+Base = declarative_base()
+Base.metadata.bind = engine
+Session = sessionmaker()
+Session.configure(bind=engine)
+session = Session()
 
-    def assign(self, document, article):
-        """
-        Adds a {"document": document, "article": article} to the ids list.
-        knows the position through the current id
-        :param document:
-        :param article:
-        :return:
-        """
-        self.ids.append({"document": document, "article": article})
-        self.current_id += 1
-        return self.current_id - 1
 
-    def retrieve(self, id):
-        return self.ids[id]
+class TextSource(Base):
+    __tablename__ = 'text_sources'
+    id = Column(Integer, primary_key=True)
+    document = Column(String)
+    article = Column(String)
+
+    def __repr__(self):
+        return "<TextSource(id='%s', document='%s', article='%s')>" % (self.id, self.document, self.article)
+
+
+def assign(document, article):
+    text_source = TextSource(document=document, article=article)
+    session.add(text_source)
+    session.flush()
+    session.refresh(text_source)
+    # refresh updates given object in the session with its state in the DB
+    # (and can also only refresh certain attributes - search for documentation)
+    return text_source.id
+
+
+def retrieve(text_source_id):
+    query = session.query(TextSource).filter(TextSource.id == text_source_id)
+    _row = query.first()
+    return _row.document, _row.article
+
+
+# create tables if needed
+if not engine.dialect.has_table(engine, 'text_sources'):
+    Base.metadata.create_all()
