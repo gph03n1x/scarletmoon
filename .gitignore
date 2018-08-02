@@ -9,6 +9,9 @@ __pycache__/
 # Reuters
 reuters/
 
+*.pickle
+db.sqlite
+
 # Idea
 .idea/
 

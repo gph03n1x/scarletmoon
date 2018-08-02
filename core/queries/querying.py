@@ -5,7 +5,7 @@ import operator
 from vendor.porter import PorterStemmer
 from core.ranking.tfidf import results_tfidf
 from core.queries.logic import intersect, union, exempt
-from core.identifier import retrieve
+from core.identifier import retrieve_by_id
 
 priorities = {
     "#and#": 1,
@@ -105,7 +105,7 @@ def simple_search(stemmer, token_index, queries):
 
     else:
         results = tf_idf.calc_tf_idf(total_results)
-        results = [(retrieve(result), results[result]) for result in results]
+        results = [(retrieve_by_id(result), results[result]) for result in results]
         print(results)
 
         if results is not None and len(results) > 0:

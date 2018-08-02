@@ -1,5 +1,5 @@
 #!/usr/bin/python
-
+import sys
 import re
 import pickle
 import heapq
@@ -14,10 +14,14 @@ from core.queries.querying import simple_search
 from core.structs.categorizer import FirstLetterSplitter
 from core.ngrams import query_combinations, NGramIndex
 
-from flask import Flask, request, Response
+from flask import Flask, request, Response, redirect
 
+if len(sys.argv) > 2:
+    STORAGE = "{0}".format(sys.argv[2])
 
-STORAGE = "storage/5PGV96KAE4IO.pickle"
+else:
+    STORAGE = "storage/3F9UOCMRXXWP.pickle"
+
 app = Flask(__name__)
 pts = PorterStemmer()
 
@@ -38,9 +42,13 @@ except IOError:
 
 @app.route("/search", methods=['GET'])
 def text_search():
-    original_query = request.args.get('query').lower()
+    original_query = request.args.get('query')
+
     # TODO: simple search is bugged atm, fix later due to using ':'
-    query = [part for part in re.split('\s+', original_query) if part]
+    if not original_query:
+        return "form boi"
+
+    query = [part for part in re.split('\s+', original_query.lower()) if part]
 
     if "*" in original_query:
         # suggestions time yay:
@@ -80,6 +88,7 @@ def scarlet_stats():
 
 @app.route("/index", methods=['POST'])
 def index_data():
+    # TODO: think about it because if the indexer is restricted it cannot reach for the fs
     print(request.data)
     match = request.get_json().get('filename')
     print("[*] Parsing: " + match)
@@ -89,14 +98,12 @@ def index_data():
     for parsed_article in parsed_articles:
         td.update_tree(parsed_article)
     # need to store token tree again
-    with open(STORAGE, 'wb') as pickle_file:
-        pickle.dump(td, pickle_file)
     return Response(json.dumps({"status": 200}))
 
 
 @app.route("/suggest", methods=['GET'])
 def suggest_corrections():
-    original_query = request.args.get('file').lower()
+    original_query = request.args.get('query').lower()
 
     query = [part for part in re.split('\s+', original_query) if part]
     parts = []
@@ -111,10 +118,18 @@ def suggest_corrections():
             parts.append([token])
 
     queries = query_combinations(parts)
-    for query in queries:
-        print("[*] " + " ".join(query))
+    return Response(json.dumps([" ".join(query) for query in queries]), status=200, mimetype='application/json')
+
+
+@app.route("/", methods=['GET'])
+def redirect_to_search():
+    return redirect("/search", code=302)
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    try:
+        app.run(host='0.0.0.0', debug=True)
+    except KeyboardInterrupt:
+        with open(STORAGE, 'wb') as pickle_file:
+            pickle.dump(td, pickle_file)
 
