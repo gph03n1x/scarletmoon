@@ -9,25 +9,33 @@ import string
 import sys
 
 from core.btree import KeyTree
-from core.ngrams import NGramIndex, query_combinations
+from core.ngrams import NGramIndex, query_combinations, suggest_if_needed
 from core.parsers.parser import PluginsSeeker
 from core.queries.querying import simple_search
+from core.tokens import ExtendedPorterStemmer
 from core.structs.categorizer import FirstLetterSplitter
+
 from flask import Flask, Response, redirect, request
-from vendor.porter import PorterStemmer
 
-if len(sys.argv) > 2:
-    STORAGE = "{0}".format(sys.argv[2])
+from celery import Celery
 
-else:
-    STORAGE = "storage/3F9UOCMRXXWP.pickle"
+STORAGE = "storage/FMZ3W5793C0S.pickle"
 
 app = Flask(__name__)
-pts = PorterStemmer()
+# Celery configuration
+app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
+app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
+
+# Initialize Celery
+celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
+celery.conf.update(app.config)
+
+pts = ExtendedPorterStemmer()
 
 PluginsSeeker.load_core_plugins()
 print(PluginsSeeker.plugins)
 
+STATS_LIMIT = 100
 
 try:
     with open(STORAGE, 'rb') as pickle_file:
@@ -43,36 +51,75 @@ except IOError:
 @app.route("/search", methods=['GET'])
 def text_search():
     original_query = request.args.get('query')
-
-    # TODO: simple search is bugged atm, fix later due to using ':'
     if not original_query:
         return "form boi"
-
-    query = [part for part in re.split('\s+', original_query.lower()) if part]
-
-    if "*" in original_query:
-        # suggestions time yay:
-        parts = []
-        for token in query:
-            if "*" in token:
-                wn = td.ngram_index.wildcard_ngrams(token)
-                unfiltered_results = td.ngram_index.suggestions(wn)
-                filtered_results = td.ngram_index.post_filtering(token, unfiltered_results)
-                print(filtered_results)
-                parts.append(filtered_results)
-            else:
-                parts.append([token])
-
-        queries = query_combinations(parts)
-        return Response(json.dumps(simple_search(pts, td, queries)), status=200, mimetype='application/json')
-
-    else:
-        return Response(json.dumps(simple_search(pts, td, [query])), status=200, mimetype='application/json')
+    result = get_results.delay(original_query).get()
+    return Response(json.dumps(result), status=200, mimetype='application/json')
 
 
 @app.route("/stats", methods=['GET'])
 def scarlet_stats():
-    limit = 100
+    result = get_stats.delay().get()
+    return Response(json.dumps(result), status=200, mimetype='application/json')
+
+
+@app.route("/index", methods=['POST'])
+def index_data():
+    print(request.data)
+    match = request.get_json().get('filename')
+    add_to_index.delay(match)
+    return Response(json.dumps({"status": 200}))
+
+
+@app.route("/suggest", methods=['GET'])
+def suggest_corrections():
+    original_query = request.args.get('query').lower()
+    result = get_suggestions.delay(original_query).get()
+    return Response(json.dumps(result), status=200, mimetype='application/json')
+
+
+@app.route("/", methods=['GET'])
+def redirect_to_search():
+    return redirect("/search", code=302)
+
+
+@celery.on_after_configure.connect
+def setup_periodic_tasks(sender, **kwargs):
+    sender.add_periodic_task(60.0, overwrite_token_tree.s(''))
+
+
+@celery.task
+def overwrite_token_tree(arg):
+    print("############# Saving token tree #############")
+    with open(STORAGE, 'wb') as pickle_file:
+        pickle.dump(td, pickle_file)
+
+
+@celery.task
+def add_to_index(match):
+    print("[*] Parsing: " + match)
+    handler = PluginsSeeker.find_handler(match)
+    parsed_articles = handler.parse_document(match)
+    print("[*] Adding:  " + match)
+    for parsed_article in parsed_articles:
+        td.update_tree(parsed_article)
+
+@celery.task
+def get_results(original_query):
+    query = [suggest_if_needed(td, part) for part in re.split('\s+', original_query.lower()) if part]
+
+    if "*" in original_query:
+        queries = query_combinations(query)
+        result = simple_search(pts, td, queries)
+
+    else:
+        result = simple_search(pts, td, [query])
+    return result
+
+
+@celery.task
+def get_stats():
+    limit = max(STATS_LIMIT, td.size())
     nodes = td.traverse()
 
     json_response = {
@@ -82,48 +129,15 @@ def scarlet_stats():
         "size": td.size(),
         "limit": limit
 
-     }
-    return Response(json.dumps(json_response), status=200, mimetype='application/json')
+    }
+    return json_response
 
 
-@app.route("/index", methods=['POST'])
-def index_data():
-    # TODO: think about it because if the indexer is restricted it cannot reach for the fs
-    print(request.data)
-    match = request.get_json().get('filename')
-    print("[*] Parsing: " + match)
-    handler = PluginsSeeker.find_handler(match)
-    parsed_articles = handler.parse_document(match)
-    print("[*] Adding:  " + match)
-    for parsed_article in parsed_articles:
-        td.update_tree(parsed_article)
-    # need to store token tree again
-    return Response(json.dumps({"status": 200}))
-
-
-@app.route("/suggest", methods=['GET'])
-def suggest_corrections():
-    original_query = request.args.get('query').lower()
-
-    query = [part for part in re.split('\s+', original_query) if part]
-    parts = []
-    for token in query:
-        if "*" in token:
-            wn = td.ngram_index.wildcard_ngrams(token)
-            unfiltered_results = td.ngram_index.suggestions(wn)
-            filtered_results = td.ngram_index.post_filtering(token, unfiltered_results)
-            # print(filtered_results)
-            parts.append(filtered_results)
-        else:
-            parts.append([token])
-
-    queries = query_combinations(parts)
-    return Response(json.dumps([" ".join(query) for query in queries]), status=200, mimetype='application/json')
-
-
-@app.route("/", methods=['GET'])
-def redirect_to_search():
-    return redirect("/search", code=302)
+@celery.task
+def get_suggestions(original_query):
+    query = [suggest_if_needed(td, part) for part in re.split('\s+', original_query) if part]
+    queries = query_combinations(query)
+    return [" ".join(query) for query in queries]
 
 
 if __name__ == "__main__":

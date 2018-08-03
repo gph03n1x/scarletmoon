@@ -11,6 +11,9 @@ reuters/
 
 *.pickle
 db.sqlite
+redis-*/
+dump.rdb
+celerybeat-schedule
 
 # Idea
 .idea/

@@ -1,8 +1,12 @@
 #!/usr/bin/python
 import re
 
+from vendor.porter import PorterStemmer
+
 tokenizer_regex = re.compile('[A-Z]{2,}(?![a-z])|[A-Z][a-z]+(?=[A-Z])|[\'\w\-]+',
                              re.MULTILINE)
+
+STEM_ENABLED = False
 
 
 def tokenizer(text):
@@ -14,6 +18,28 @@ def tokenizer(text):
     tokens = tokenizer_regex.findall(text)
     # filter(lambda s: len(s)>1, tokens)
     return tokens
+
+
+class ExtendedPorterStemmer(PorterStemmer):
+
+    """
+    Extends the porter stemmer with a stem_words method.
+    """
+
+    def stem_words(self, words):
+        """
+        stems each token in list of tokens
+        :param words
+        :return: list of stemmed tokens
+        """
+        if STEM_ENABLED:
+            return [self.stem(word, 0, len(word)-1) for word in words]
+        return words
+
+    def stem_word(self, word):
+        if STEM_ENABLED:
+            return self.stem(word, 0, len(word)-1)
+        return word
 
 
 if __name__ == "__main__":

@@ -120,11 +120,12 @@ class KeyTree:
         """
         node = self.root
         while node:
+            # print(node.key)
             if key == node.key:
                 return node, node.idf(self.get_doc_count())
             node, _ = node.get_next(key)
 
-        return None
+        return None, 0  # default idf if the token doesnt exist
 
     def delete_tr(self):
         """
@@ -134,6 +135,9 @@ class KeyTree:
         self.root = None
 
     def traverse(self):
+        if self.root is None:
+            return []
+
         queue = [self.root]
         nodes = []
         while queue:

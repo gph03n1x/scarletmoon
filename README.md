@@ -1,11 +1,17 @@
+README NEEDS UPDATE
+-------------------
+
+
 ### Scarlet Moon
 Inverted Indexer project from information retrieval.
 Implemented with python 3.6.0
+
 
 ### Dependencies
 
 ```bash
 pip install -r requirements.txt
+bash bin/install_redis.sh
 ```
 
 ### Adding documents
@@ -28,22 +34,16 @@ python scan.py -f *.sgm -d reuters -o tokentree
 
 ### Using scarletmoon
 
-The application loads by default the tokentree.pickle and is intended for
-terminal use because it cleans the screen and uses getch.ex
+
 
 ```bash
-[*] :load [file path]
-[*] Loads a file into the current btree
-[*] :index save [filename]
-[*] Saves the current btree in the specified filename
-[*] :index load [filename]
-[*] Loads the btree from the specified filename
-[*] :freq [number]
-[*] Shows the [number] most frequent tokens.
-[*] :size
-[*] Shows the size of the btrees
-[*] :debug
-[*] Shows information from sys._debugmallocstats()
-[*] :exit
-[*] Exits the application
+redis-4.0.10/src/redis-server
+celery worker -A scarlet.celery --loglevel=info -B
+python scarlet.py
+```
+
+### Running the unittests
+
+```bash
+python -m unittest discover
 ```

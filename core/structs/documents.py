@@ -1,8 +1,7 @@
 #!/usr/bin/python
 from collections import Counter
 
-from core.tokens import tokenizer
-from vendor.porter import PorterStemmer
+from core.tokens import tokenizer, ExtendedPorterStemmer
 
 
 class document:
@@ -13,13 +12,13 @@ class document:
         :param title:
         :param text:
         """
-        pts = PorterStemmer()
+        pts = ExtendedPorterStemmer()
         self.doc_name = doc_name
         self.title = title
         self.text = text
         self.tokens = tokenizer(self.title + " " + self.text)
         self.total_tokens = len(self.tokens)
-        self.frequencies = Counter(list(pts.stem(token.lower(), 0, len(token)-1) for token in self.tokens))
+        self.frequencies = Counter(list(pts.stem_word(token.lower()) for token in self.tokens))
         self.tokens = set(self.tokens)
 
     def identifier(self):

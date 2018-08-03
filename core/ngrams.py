@@ -47,18 +47,21 @@ class NGramIndex:
             for ngram in ngrams:
                 self.index[ngram].update([token])
 
-    def suggestions(self, ngrams):
+    def suggestions(self, wildcard_input):
         """
         gets all the common tokens from an ngram list.
-        :param ngrams:
+        :param wildcard_input:
         :return:
         """
+        ngrams = self.wildcard_ngrams(wildcard_input)
         if ngrams:
             results = self.index[ngrams[0]]
             # print(results)
             for ngram in range(1, len(ngrams)):
                 results = results & self.index[ngrams[ngram]]
-            return results
+
+            return self.post_filtering(wildcard_input, results)
+
         return set()
 
     def wildcard_ngrams(self, wildcard_input):
@@ -98,6 +101,11 @@ class NGramIndex:
         """
         return [suggestion for suggestion in suggestions if fnmatch.fnmatch(suggestion, wildcard_input)]
 
+
+def suggest_if_needed(td, token):
+    if "*" in token:
+        return td.ngram_index.suggestions(token)
+    return token
 
 if __name__ == "__main__":
     ni = NGramIndex(2)
