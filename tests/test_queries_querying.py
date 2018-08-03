@@ -1,7 +1,6 @@
 import unittest
 
-
-from core.queries.querying import sort_query
+from moon.queries.querying import sort_query
 
 
 class TestSortQuery(unittest.TestCase):

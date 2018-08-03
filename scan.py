@@ -5,10 +5,10 @@ import os
 import pickle
 import time
 
-from core.btree import KeyTree
-from core.ngrams import NGramIndex
-from core.parsers.parser import PluginsSeeker
-from core.structs.categorizer import FirstLetterSplitter
+from moon.btree import KeyTree
+from moon.ngrams import NGramIndex
+from moon.parsers.parser import PluginsSeeker
+from moon.structs.categorizer import FirstLetterSplitter
 
 parser = argparse.ArgumentParser(description='Scans folders for documents')
 parser.add_argument('-f', '--filter', required=True)

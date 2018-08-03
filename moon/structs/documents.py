@@ -1,7 +1,7 @@
 #!/usr/bin/python
 from collections import Counter
 
-from core.tokens import tokenizer, ExtendedPorterStemmer
+from moon.tokens import ExtendedPorterStemmer, tokenizer
 
 
 class document:

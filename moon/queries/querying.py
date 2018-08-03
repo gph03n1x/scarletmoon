@@ -2,10 +2,9 @@
 import heapq
 import operator
 
-from core.identifier import retrieve_by_id
-from core.queries.logic import exempt, intersect, union
-from core.ranking.tfidf import results_tfidf
-
+from moon.identifier import retrieve_by_id
+from moon.queries.logic import exempt, intersect, union
+from moon.ranking.tfidf import results_tfidf
 
 priorities = {
     "<and>": 2,

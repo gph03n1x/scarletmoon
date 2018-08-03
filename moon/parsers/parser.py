@@ -35,7 +35,7 @@ class PluginsSeeker(abc.ABCMeta):
 
     @classmethod
     def load_core_plugins(cls):
-        module = 'core.parsers.plugins'
+        module = 'moon.parsers.plugins'
         core_plugin_directory = os.path.dirname(__file__)
 
         for file_ in os.listdir("{0}/plugins".format(core_plugin_directory)):

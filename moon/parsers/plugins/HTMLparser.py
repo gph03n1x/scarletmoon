@@ -1,8 +1,8 @@
 import re
 
 from bs4 import BeautifulSoup
-from core.parsers import parser
-from core.structs.documents import document
+from moon.parsers import parser
+from moon.structs.documents import document
 
 split = re.compile('\s+', re.VERBOSE | re.MULTILINE)
 escape = re.compile('(\\n|\\t|\\r)', re.VERBOSE | re.MULTILINE)

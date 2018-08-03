@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import string
 
-from core.identifier import assign
+from moon.identifier import assign
 
 
 class FirstLetterSplitter:
@@ -65,7 +65,6 @@ class FirstLetterSplitter:
         :param token:
         :return:
         """
-        print(token, self[token].find(token))
         return self[token].find(token)
 
     def size(self, category=None):

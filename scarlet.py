@@ -3,23 +3,18 @@ import heapq
 import json
 import operator
 import pickle
-import random
 import re
-import string
-import sys
-
-from core.btree import KeyTree
-from core.ngrams import NGramIndex, query_combinations, suggest_if_needed
-from core.parsers.parser import PluginsSeeker
-from core.queries.querying import simple_search
-from core.tokens import ExtendedPorterStemmer
-from core.structs.categorizer import FirstLetterSplitter
-
-from flask import Flask, Response, redirect, request
 
 from celery import Celery
+from moon.btree import KeyTree
+from moon.ngrams import NGramIndex, query_combinations, suggest_if_needed
+from moon.parsers.parser import PluginsSeeker
+from moon.queries.querying import simple_search
+from moon.structs.categorizer import FirstLetterSplitter
+from moon.tokens import ExtendedPorterStemmer
+from flask import Flask, Response, redirect, request
 
-STORAGE = "storage/FMZ3W5793C0S.pickle"
+STORAGE = "storage/tokentree.pickle"
 
 app = Flask(__name__)
 # Celery configuration
@@ -31,21 +26,20 @@ celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
 celery.conf.update(app.config)
 
 pts = ExtendedPorterStemmer()
-
 PluginsSeeker.load_core_plugins()
-print(PluginsSeeker.plugins)
 
 STATS_LIMIT = 100
-
+# TODO: should load only in celery worker
 try:
     with open(STORAGE, 'rb') as pickle_file:
         print("[*] Loading pickle file")
         td = pickle.load(pickle_file)
 except IOError:
-    print("[-] Creating a new inverted index")
-    name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(12))
-    STORAGE = "storage/{0}.pickle".format(name)
     td = FirstLetterSplitter(KeyTree, NGramIndex(2))
+
+############################################
+#               FLASK ROUTES               #
+############################################
 
 
 @app.route("/search", methods=['GET'])
@@ -53,7 +47,7 @@ def text_search():
     original_query = request.args.get('query')
     if not original_query:
         return "form boi"
-    result = get_results.delay(original_query).get()
+    result = get_results.delay(original_query).wait()
     return Response(json.dumps(result), status=200, mimetype='application/json')
 
 
@@ -82,14 +76,18 @@ def suggest_corrections():
 def redirect_to_search():
     return redirect("/search", code=302)
 
+############################################
+#               CELERY TASKS               #
+############################################
+
 
 @celery.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
-    sender.add_periodic_task(60.0, overwrite_token_tree.s(''))
+    sender.add_periodic_task(60.0, overwrite_token_tree)
 
 
 @celery.task
-def overwrite_token_tree(arg):
+def overwrite_token_tree():
     print("############# Saving token tree #############")
     with open(STORAGE, 'wb') as pickle_file:
         pickle.dump(td, pickle_file)
@@ -121,12 +119,11 @@ def get_results(original_query):
 def get_stats():
     limit = max(STATS_LIMIT, td.size())
     nodes = td.traverse()
-
     json_response = {
         "top_frequencies": [
             [result[0], result[1]] for result in heapq.nlargest(limit, nodes, key=operator.itemgetter(1))
         ],
-        "size": td.size(),
+        "size": td.size(),  # TODO might be bugged
         "limit": limit
 
     }

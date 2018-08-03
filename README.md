@@ -38,7 +38,8 @@ python scan.py -f *.sgm -d reuters -o tokentree
 
 ```bash
 redis-4.0.10/src/redis-server
-celery worker -A scarlet.celery --loglevel=info -B
+# You need to use only one worker else the results get somehow messed up.
+celery worker -A scarlet.celery --loglevel=info -B -P solo
 python scarlet.py
 ```
 
