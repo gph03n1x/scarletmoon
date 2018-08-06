@@ -7,7 +7,7 @@ import time
 
 from moon.btree import KeyTree
 from moon.ngrams import NGramIndex
-from moon.parsers.parser import PluginsSeeker
+from moon.plugins import PluginsSeeker
 from moon.structs.categorizer import FirstLetterSplitter
 
 parser = argparse.ArgumentParser(description='Scans folders for documents')
@@ -26,7 +26,7 @@ PluginsSeeker.load_core_plugins()
 start_time = time.time()
 for match in matches:
     print("[*] Parsing: " + match)
-    handler = PluginsSeeker.find_handler(match)
+    handler = PluginsSeeker.find_appropriate_parser(match)
     parsed_articles = handler.parse_document(match)
     print("[*] Adding:  " + match)
     for parsed_article in parsed_articles:

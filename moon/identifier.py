@@ -6,8 +6,9 @@ from sqlalchemy import Column, Integer, String, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
+DB_ECHO = False
 # check if db exists
-engine = create_engine('sqlite:///db.sqlite', echo=True)
+engine = create_engine('sqlite:///db.sqlite', echo=DB_ECHO)
 Base = declarative_base()
 Base.metadata.bind = engine
 
@@ -31,13 +32,13 @@ def get_hash(document, article):
     return m.hexdigest()
 
 
-def assign(document, article):
+def assign(document, article, url=""):
     Session = sessionmaker()
     Session.configure(bind=engine)
     session = Session()
     doc_hash = get_hash(document, article)
     try:
-        text_source = TextSource(document=document, article=article, url="", hash=doc_hash)
+        text_source = TextSource(document=document, article=article, url=url, hash=doc_hash)
         session.add(text_source)
         session.flush()
         session.refresh(text_source)
@@ -56,7 +57,7 @@ def retrieve_by_hash(doc_hash):
     session = Session()
     query = session.query(TextSource).filter(TextSource.hash == doc_hash)
     _row = query.first()
-    return _row.id, _row.document, _row.article, _row.hash
+    return _row.id, _row.document, _row.article, _row.hash, _row.url
 
 
 

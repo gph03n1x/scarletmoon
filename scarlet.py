@@ -6,14 +6,14 @@ import operator
 import pickle
 import re
 
-from celery import Celery
-from moon.btree import KeyTree
-from moon.ngrams import NGramIndex, query_combinations, suggest_if_needed
-from moon.parsers.parser import PluginsSeeker
-from moon.queries.querying import simple_search
-from moon.structs.categorizer import FirstLetterSplitter
-from moon.tokens import ExtendedPorterStemmer
 from flask import Flask, Response, redirect, request
+
+from celery import Celery
+from moon.ngrams import query_combinations, suggest_if_needed
+from moon.plugins import PluginsSeeker
+from moon.queries.querying import simple_search
+from moon.structs.categorizer import NamedIndexes
+from moon.tokens import ExtendedPorterStemmer
 
 STORAGE = "storage/tokentree.pickle"
 
@@ -27,25 +27,25 @@ celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
 celery.conf.update(app.config)
 
 pts = ExtendedPorterStemmer()
-PluginsSeeker.load_core_plugins()
+PluginsSeeker.load_core_plugins('parsers')
+PluginsSeeker.load_core_plugins('query')
+print((PluginsSeeker.plugins))
 
 STATS_LIMIT = 100
-
+"""
 parser = argparse.ArgumentParser(description="Rend a spatial data database/application")
-
 parser.add_argument("-nl", "--no-loading", action="store_true", default=False)
-
-
 args = parser.parse_args()
+td = None
 
 if not args.no_loading:
-    # TODO: should load only in celery worker
-    try:
-        with open(STORAGE, 'rb') as pickle_file:
-            print("[*] Loading pickle file")
-            td = pickle.load(pickle_file)
-    except IOError:
-        td = FirstLetterSplitter(KeyTree, NGramIndex(2))
+"""
+try:
+    with open(STORAGE, 'rb') as pickle_file:
+        print("[*] Loading pickle file")
+        td = pickle.load(pickle_file)
+except IOError:
+    td = NamedIndexes()
 
 ############################################
 #               FLASK ROUTES               #
@@ -55,15 +55,18 @@ if not args.no_loading:
 @app.route("/search", methods=['GET'])
 def text_search():
     original_query = request.args.get('query')
+    index_name = request.args.get('name')
+    print(index_name)
     if not original_query:
         return "form boi"
-    result = get_results.delay(original_query).wait()
+    result = get_results.delay(index_name, original_query).wait()
     return Response(json.dumps(result), status=200, mimetype='application/json')
 
 
 @app.route("/stats", methods=['GET'])
 def scarlet_stats():
-    result = get_stats.delay().get()
+    index_name = request.args.get('name')
+    result = get_stats.delay(index_name).get()
     return Response(json.dumps(result), status=200, mimetype='application/json')
 
 
@@ -71,14 +74,18 @@ def scarlet_stats():
 def index_data():
     print(request.data)
     match = request.get_json().get('filename')
-    add_to_index.delay(match)
+    url = request.get_json().get('origin_url')
+    index_name = request.get_json().get('name')
+
+    add_to_index.delay(index_name, match, url)
     return Response(json.dumps({"status": 200}))
 
 
 @app.route("/suggest", methods=['GET'])
 def suggest_corrections():
+    index_name = request.args.get('name')
     original_query = request.args.get('query').lower()
-    result = get_suggestions.delay(original_query).get()
+    result = get_suggestions.delay(index_name, original_query).get()
     return Response(json.dumps(result), status=200, mimetype='application/json')
 
 
@@ -104,36 +111,40 @@ def overwrite_token_tree():
 
 
 @celery.task
-def add_to_index(match):
+def add_to_index(index, match, url):
     print("[*] Parsing: " + match)
-    handler = PluginsSeeker.find_handler(match)
+    handler = PluginsSeeker.find_appropriate_parser(match)
     parsed_articles = handler.parse_document(match)
     print("[*] Adding:  " + match)
     for parsed_article in parsed_articles:
-        td.update_tree(parsed_article)
+        td[index].update_tree(parsed_article, url)
+
 
 @celery.task
-def get_results(original_query):
-    query = [suggest_if_needed(td, part) for part in re.split('\s+', original_query.lower()) if part]
+def get_results(index, original_query):
+    original_query = PluginsSeeker.process_query(original_query)
+    print(original_query)
+    td[index]
+    query = [suggest_if_needed(td[index], part) for part in re.split('\s+', original_query.lower()) if part]
 
     if "*" in original_query:
         queries = query_combinations(query)
-        result = simple_search(pts, td, queries)
+        result = simple_search(pts, td[index], queries)
 
     else:
-        result = simple_search(pts, td, [query])
+        result = simple_search(pts, td[index], [query])
     return result
 
 
 @celery.task
-def get_stats():
-    limit = max(STATS_LIMIT, td.size())
-    nodes = td.traverse()
+def get_stats(index):
+    limit = max(STATS_LIMIT, td[index].size())
+    nodes = td[index].traverse()
     json_response = {
         "top_frequencies": [
             [result[0], result[1]] for result in heapq.nlargest(limit, nodes, key=operator.itemgetter(1))
         ],
-        "size": td.size(),  # TODO might be bugged
+        "size": td[index].size(),  # TODO might be bugged
         "limit": limit
 
     }
@@ -141,15 +152,11 @@ def get_stats():
 
 
 @celery.task
-def get_suggestions(original_query):
-    query = [suggest_if_needed(td, part) for part in re.split('\s+', original_query) if part]
+def get_suggestions(index, original_query):
+    query = [suggest_if_needed(td[index], part) for part in re.split('\s+', original_query) if part]
     queries = query_combinations(query)
     return [" ".join(query) for query in queries]
 
 
 if __name__ == "__main__":
-    try:
-        app.run(host='0.0.0.0', debug=True)
-    except KeyboardInterrupt:
-        with open(STORAGE, 'wb') as pickle_file:
-            pickle.dump(td, pickle_file)
+    app.run(host='0.0.0.0', debug=True)

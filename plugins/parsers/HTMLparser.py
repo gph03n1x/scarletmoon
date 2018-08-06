@@ -1,15 +1,16 @@
 import re
 
 from bs4 import BeautifulSoup
-from moon.parsers import parser
+
+from moon import plugins
 from moon.structs.documents import document
 
 split = re.compile('\s+', re.VERBOSE | re.MULTILINE)
 escape = re.compile('(\\n|\\t|\\r)', re.VERBOSE | re.MULTILINE)
 
 
-class HTMLParser(parser.PluginParser):
-    name = "HTML Parser"
+class HTMLParser(plugins.PluginParser):
+    name = "HTML parser"
     handles = "*.html"
 
     @staticmethod

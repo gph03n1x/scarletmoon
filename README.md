@@ -11,6 +11,7 @@ Implemented with python 3.6.0
 
 ```bash
 pip install -r requirements.txt
+python -m spacy download en_core_web_sm
 bash bin/install_redis.sh
 ```
 

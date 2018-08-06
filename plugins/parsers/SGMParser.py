@@ -1,11 +1,12 @@
 #!/usr/bin/python
 from bs4 import BeautifulSoup
-from moon.parsers import parser
+
+from moon import plugins
 from moon.structs.documents import document
 
 
-class ReutersSGMParser(parser.PluginParser):
-    name = "Reuters SGM Parser"
+class ReutersSGMParser(plugins.PluginParser):
+    name = "Reuters SGM parser"
     handles = "reuters/*.sgm"
 
     @staticmethod

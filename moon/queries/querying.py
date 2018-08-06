@@ -6,20 +6,24 @@ from moon.identifier import retrieve_by_hash
 from moon.queries.logic import exempt, intersect, union
 from moon.ranking.tfidf import results_tfidf
 
+AND_OPERATION = '<and>'
+OR_OPERATION = '<or>'
+NOT_OPERATION = '<not>'
+
 priorities = {
-    "<and>": 2,
-    "<or>": 1,
-    "<not>": 2
+    AND_OPERATION: 2,
+    OR_OPERATION: 1,
+    NOT_OPERATION: 2
 }
 
 operations = {
-    "<and>": intersect,
-    "<or>": union,
-    "<not>": exempt
+    AND_OPERATION: intersect,
+    OR_OPERATION: union,
+    NOT_OPERATION: exempt
 }
 
 
-def sort_query(query, default_op="<or>"):
+def sort_query(query, default_op=OR_OPERATION):
     """
     sorts a query based on the boolean priorities.
     :param: testing <or> not something <not> hype <or> random <not> python

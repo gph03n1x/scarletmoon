@@ -1,7 +1,26 @@
 #!/usr/bin/python
 import string
 
+from moon.btree import KeyTree
 from moon.identifier import assign
+from moon.ngrams import NGramIndex
+
+
+class NamedIndexes:
+
+    def __init__(self):
+        self.indexes = {}
+
+    def __getitem__(self, name):
+        """
+        returns the appropriate tree for the token we are looking for.
+        :param first_letter:
+        :return:
+        """
+        if name not in self.indexes:
+            self.indexes[name] = FirstLetterSplitter(KeyTree, NGramIndex(2))
+
+        return self.indexes[name]
 
 
 class FirstLetterSplitter:
@@ -31,14 +50,14 @@ class FirstLetterSplitter:
             return self.structs[first_letter]
         return self.structs['misc']
 
-    def update_tree(self, document):
+    def update_tree(self, document, url=""):
         """
         updates the tree with a new document.
         :param document:
         :return:
         """
         tokens = document.frequencies
-        id = assign(*document.identifier())
+        id = assign(*document.identifier(), url=url)
         for token in tokens:
             self.count += 1
             doc_freq = tokens[token] / document.total_tokens
