@@ -1,16 +1,32 @@
 #!/usr/bin/python
+from contextlib import contextmanager
+import datetime
 import hashlib
 
 import sqlalchemy.exc
-from sqlalchemy import Column, Integer, String, create_engine
+from sqlalchemy import Column, Integer, String, create_engine, DateTime
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session
 
 DB_ECHO = False
 # check if db exists
 engine = create_engine('sqlite:///db.sqlite', echo=DB_ECHO)
 Base = declarative_base()
 Base.metadata.bind = engine
+
+
+@contextmanager
+def session_scope():
+    """Provide a transactional scope around a series of operations."""
+    session = Session()
+    try:
+        yield session
+        session.commit()
+    except:
+        session.rollback()
+        raise
+    finally:
+        session.close()
 
 
 class TextSource(Base):
@@ -20,6 +36,8 @@ class TextSource(Base):
     article = Column(String)
     url = Column(String)
     hash = Column(String, unique=True)
+    created_date = Column(DateTime, default=datetime.datetime.utcnow)
+    modified_date = Column(DateTime, default=datetime.datetime.utcnow)
 
     def __repr__(self):
         return "<TextSource(id='%s', document='%s', article='%s')>" % (self.id, self.document, self.article)
@@ -33,32 +51,31 @@ def get_hash(document, article):
 
 
 def assign(document, article, url=""):
-    Session = sessionmaker()
-    Session.configure(bind=engine)
-    session = Session()
     doc_hash = get_hash(document, article)
-    try:
-        text_source = TextSource(document=document, article=article, url=url, hash=doc_hash)
-        session.add(text_source)
-        session.flush()
-        session.refresh(text_source)
-        # refresh updates given object in the session with its state in the DB
-        # (and can also only refresh certain attributes - search for documentation)
-        session.commit()
-    except sqlalchemy.exc.IntegrityError:
-        pass
+
+    with session_scope() as session:
+        try:
+            text_source = TextSource(document=document, article=article, url=url, hash=doc_hash)
+            session.add(text_source)
+            session.commit()
+        except sqlalchemy.exc.IntegrityError:
+            # update the modified time.
+            session.rollback()
+            query = session.query(TextSource).filter(TextSource.hash == doc_hash)
+            _row = query.first()
+            _row.modified_date = datetime.datetime.utcnow()
+            session.merge(_row)
+            session.commit()
 
     return doc_hash
 
 
 def retrieve_by_hash(doc_hash):
-    Session = sessionmaker()
-    Session.configure(bind=engine)
-    session = Session()
-    query = session.query(TextSource).filter(TextSource.hash == doc_hash)
-    _row = query.first()
-    return _row.id, _row.document, _row.article, _row.hash, _row.url
-
+    with session_scope() as session:
+        query = session.query(TextSource).filter(TextSource.hash == doc_hash)
+        _row = query.first()
+        return {'id': _row.id, 'document': _row.document, 'article': _row.article, 'hash': _row.hash, 'url': _row.url,
+                'created': _row.created_date, 'modified': _row.modified_date}
 
 
 # create tables if needed

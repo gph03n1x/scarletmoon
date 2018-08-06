@@ -54,6 +54,7 @@ class FirstLetterSplitter:
         """
         updates the tree with a new document.
         :param document:
+        :param url:
         :return:
         """
         tokens = document.frequencies

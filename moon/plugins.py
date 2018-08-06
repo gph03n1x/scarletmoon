@@ -20,38 +20,38 @@ class PluginsSeeker(abc.ABCMeta):
         return cls
 
     @classmethod
-    def get_query_plugin(cls, name):
-        return cls.plugins["QUERY"][name]
+    def get_query_plugin(mcs, name):
+        return mcs.plugins["QUERY"][name]
 
     @classmethod
-    def get_parser_plugin(cls, name):
-        return cls.plugins["PARSER"][name]
+    def get_parser_plugin(mcs, name):
+        return mcs.plugins["PARSER"][name]
 
     @classmethod
-    def find_appropriate_parser(cls, document):
-        for plugin in cls.plugins["PARSER"]:
-            if fnmatch.fnmatch(document, cls.plugins["PARSER"][plugin].handles):
-                return cls.plugins["PARSER"][plugin]
+    def find_appropriate_parser(mcs, document):
+        for plugin in mcs.plugins["PARSER"]:
+            if fnmatch.fnmatch(document, mcs.plugins["PARSER"][plugin].handles):
+                return mcs.plugins["PARSER"][plugin]
 
     @classmethod
-    def process_query(cls, query):
-        for plugin in cls.plugins["QUERY"]:
-            if cls.plugins["QUERY"][plugin].can_handle(query):
-                return cls.plugins["QUERY"][plugin].reconstruct_query(query)
+    def process_query(mcs, query):
+        for plugin in mcs.plugins["QUERY"]:
+            if mcs.plugins["QUERY"][plugin].can_handle(query):
+                return mcs.plugins["QUERY"][plugin].reconstruct_query(query)
         return query
 
     @classmethod
-    def load(cls, * plugin_modules):
+    def load(mcs, * plugin_modules):
         for plugin_module in plugin_modules:
             __plugin = importlib.import_module(plugin_module)
 
     @classmethod
-    def load_all_plugins(cls):
-        cls.load_core_plugins('parsers')
-        cls.load_core_plugins('query')
+    def load_all_plugins(mcs):
+        mcs.load_core_plugins('parsers')
+        mcs.load_core_plugins('query')
 
     @classmethod
-    def load_core_plugins(cls, sub_plugin):
+    def load_core_plugins(mcs, sub_plugin):
         module = 'plugins.{0}'.format(sub_plugin)
 
         for file_ in os.listdir("{0}/plugins/{1}/".format(os.getcwd(), sub_plugin)):

@@ -1,5 +1,4 @@
 #!/usr/bin/python
-import argparse
 import heapq
 import json
 import operator
@@ -29,7 +28,6 @@ celery.conf.update(app.config)
 pts = ExtendedPorterStemmer()
 PluginsSeeker.load_core_plugins('parsers')
 PluginsSeeker.load_core_plugins('query')
-print((PluginsSeeker.plugins))
 
 STATS_LIMIT = 100
 """
@@ -124,7 +122,6 @@ def add_to_index(index, match, url):
 def get_results(index, original_query):
     original_query = PluginsSeeker.process_query(original_query)
     print(original_query)
-    td[index]
     query = [suggest_if_needed(td[index], part) for part in re.split('\s+', original_query.lower()) if part]
 
     if "*" in original_query:
