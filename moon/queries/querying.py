@@ -2,7 +2,7 @@
 import heapq
 import operator
 
-from moon.identifier import retrieve_by_id
+from moon.identifier import retrieve_by_hash
 from moon.queries.logic import exempt, intersect, union
 from moon.ranking.tfidf import results_tfidf
 
@@ -93,7 +93,7 @@ def simple_search(stemmer, token_index, queries):
 
     else:
         results = tf_idf.calc_tf_idf(total_results)
-        results = [(retrieve_by_id(result), results[result]) for result in results]
+        results = [(retrieve_by_hash(result), results[result]) for result in results]
 
         if results is not None and len(results) > 0:
             return sorted(results, key=operator.itemgetter(1), reverse=True)

@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import argparse
 import heapq
 import json
 import operator
@@ -29,13 +30,22 @@ pts = ExtendedPorterStemmer()
 PluginsSeeker.load_core_plugins()
 
 STATS_LIMIT = 100
-# TODO: should load only in celery worker
-try:
-    with open(STORAGE, 'rb') as pickle_file:
-        print("[*] Loading pickle file")
-        td = pickle.load(pickle_file)
-except IOError:
-    td = FirstLetterSplitter(KeyTree, NGramIndex(2))
+
+parser = argparse.ArgumentParser(description="Rend a spatial data database/application")
+
+parser.add_argument("-nl", "--no-loading", action="store_true", default=False)
+
+
+args = parser.parse_args()
+
+if not args.no_loading:
+    # TODO: should load only in celery worker
+    try:
+        with open(STORAGE, 'rb') as pickle_file:
+            print("[*] Loading pickle file")
+            td = pickle.load(pickle_file)
+    except IOError:
+        td = FirstLetterSplitter(KeyTree, NGramIndex(2))
 
 ############################################
 #               FLASK ROUTES               #

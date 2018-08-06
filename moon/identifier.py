@@ -45,9 +45,9 @@ def assign(document, article):
         # (and can also only refresh certain attributes - search for documentation)
         session.commit()
     except sqlalchemy.exc.IntegrityError:
-        return retrieve_by_hash(doc_hash)
-    else:
-        return text_source.id
+        pass
+
+    return doc_hash
 
 
 def retrieve_by_hash(doc_hash):
@@ -56,16 +56,8 @@ def retrieve_by_hash(doc_hash):
     session = Session()
     query = session.query(TextSource).filter(TextSource.hash == doc_hash)
     _row = query.first()
-    return _row.id
+    return _row.id, _row.document, _row.article, _row.hash
 
-
-def retrieve_by_id(text_source_id):
-    Session = sessionmaker()
-    Session.configure(bind=engine)
-    session = Session()
-    query = session.query(TextSource).filter(TextSource.id == text_source_id)
-    _row = query.first()
-    return _row.document, _row.article
 
 
 # create tables if needed
