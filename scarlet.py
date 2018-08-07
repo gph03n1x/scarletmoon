@@ -4,6 +4,8 @@ import json
 import operator
 import pickle
 import re
+import sys
+import time
 
 from flask import Flask, Response, redirect, request
 
@@ -30,20 +32,14 @@ PluginsSeeker.load_core_plugins('parsers')
 PluginsSeeker.load_core_plugins('query')
 
 STATS_LIMIT = 100
-"""
-parser = argparse.ArgumentParser(description="Rend a spatial data database/application")
-parser.add_argument("-nl", "--no-loading", action="store_true", default=False)
-args = parser.parse_args()
-td = None
 
-if not args.no_loading:
-"""
-try:
-    with open(STORAGE, 'rb') as pickle_file:
-        print("[*] Loading pickle file")
-        td = pickle.load(pickle_file)
-except IOError:
-    td = NamedIndexes()
+if "celery" in sys.argv[0]:
+    try:
+        with open(STORAGE, 'rb') as pickle_file:
+            print("[*] Loading pickle file")
+            td = pickle.load(pickle_file)
+    except IOError:
+        td = NamedIndexes()
 
 ############################################
 #               FLASK ROUTES               #
@@ -57,8 +53,11 @@ def text_search():
     print(index_name)
     if not original_query:
         return "form boi"
+    start = time.clock()
     result = get_results.delay(index_name, original_query).wait()
-    return Response(json.dumps(result), status=200, mimetype='application/json')
+
+    return Response(json.dumps({"results": result, "time": time.clock() - start}),
+                    status=200, mimetype='application/json')
 
 
 @app.route("/stats", methods=['GET'])
