@@ -75,7 +75,7 @@ def retrieve_by_hash(doc_hash):
         query = session.query(TextSource).filter(TextSource.hash == doc_hash)
         _row = query.first()
         return {'id': _row.id, 'document': _row.document, 'article': _row.article, 'hash': _row.hash, 'url': _row.url,
-                'created': _row.created_date, 'modified': _row.modified_date}
+                'created': str(_row.created_date), 'modified': str(_row.modified_date)}
 
 
 # create tables if needed

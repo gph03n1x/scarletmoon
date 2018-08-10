@@ -15,7 +15,7 @@ class PluginsSeeker(abc.ABCMeta):
 
     def __new__(mcs, name, bases, namespace):
         cls = abc.ABCMeta.__new__(mcs, name, bases, namespace)
-        if isinstance(cls.name, str):
+        if isinstance(cls.name, str) and cls.enabled is True:
             mcs.plugins[cls.TYPE][cls.name] = cls
         return cls
 
@@ -83,6 +83,11 @@ class PluginParser(metaclass=PluginsSeeker):
     def handles(self):
         raise NotImplemented()
 
+    @property
+    @abc.abstractmethod
+    def enabled(self):
+        raise NotImplemented()
+
     @staticmethod
     @abc.abstractmethod
     def parse_document(file_name):
@@ -100,6 +105,11 @@ class PluginQuery(metaclass=PluginsSeeker):
     @staticmethod
     @abc.abstractmethod
     def can_handle(query):
+        raise NotImplemented()
+
+    @property
+    @abc.abstractmethod
+    def enabled(self):
         raise NotImplemented()
 
     @staticmethod

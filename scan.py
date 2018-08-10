@@ -5,10 +5,8 @@ import os
 import pickle
 import time
 
-from moon.btree import KeyTree
-from moon.ngrams import NGramIndex
 from moon.plugins import PluginsSeeker
-from moon.structs.categorizer import FirstLetterSplitter
+from moon.structs.categorizer import NamedIndexes
 
 parser = argparse.ArgumentParser(description='Scans folders for documents')
 parser.add_argument('-f', '--filter', required=True)
@@ -20,8 +18,9 @@ args = parser.parse_args()
 matches = [os.path.join(args.directory, document) for document in os.listdir(args.directory)
     if fnmatch.fnmatch(document, args.filter)]
 
-td = FirstLetterSplitter(KeyTree, NGramIndex(2))
-PluginsSeeker.load_core_plugins()
+td = NamedIndexes()
+PluginsSeeker.load_core_plugins('parsers')
+PluginsSeeker.load_core_plugins('query')
 
 start_time = time.time()
 for match in matches:
@@ -30,7 +29,7 @@ for match in matches:
     parsed_articles = handler.parse_document(match)
     print("[*] Adding:  " + match)
     for parsed_article in parsed_articles:
-        td.update_tree(parsed_article)
+        td['reuters'].update_tree(parsed_article)
 
 print("[+] Parsing complete")
 print("[*] Time elapsed : "+str(time.time()-start_time))

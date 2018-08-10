@@ -8,6 +8,7 @@ from moon.structs.documents import document
 class ReutersSGMParser(plugins.PluginParser):
     name = "Reuters SGM parser"
     handles = "reuters/*.sgm"
+    enabled = True
 
     @staticmethod
     def parse_document(file_name):
