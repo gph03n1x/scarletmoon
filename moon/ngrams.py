@@ -6,7 +6,7 @@ from collections import defaultdict
 
 def get_n_grams(token, grams_count):
     """
-    returns the ngrams of a token
+    returns the n_grams of a token
     :param token: ex. results
     :param grams_count: ex. 2
     :return: ['$r', 're', 'es', 'su', 'ul', 'lt', 'ts', 's$']
@@ -34,65 +34,64 @@ class NGramIndex:
 
     def index_token(self, token):
         """
-        creates an index with the ngrams of each token.
+        creates an index with the n_grams of each token.
         :param token:
         :return:
         """
         try:
-            ngrams = get_n_grams(token, self.length)
+            n_grams = get_n_grams(token, self.length)
         except IndexError:
             # tokens with 1 length make this :(
             pass
         else:
-            for ngram in ngrams:
-                self.index[ngram].update([token])
+            for n_gram in n_grams:
+                self.index[n_gram].update([token])
 
     def suggestions(self, wildcard_input):
         """
-        gets all the common tokens from an ngram list.
+        gets all the common tokens from an n_gram list.
         :param wildcard_input:
         :return:
         """
-        ngrams = self.wildcard_ngrams(wildcard_input)
-        if ngrams:
-            results = self.index[ngrams[0]]
+        n_grams = self.wildcard_n_grams(wildcard_input)
+        if n_grams:
+            results = self.index[n_grams[0]]
             # print(results)
-            for ngram in range(1, len(ngrams)):
-                results = results & self.index[ngrams[ngram]]
+            for n_gram in range(1, len(n_grams)):
+                results = results & self.index[n_grams[n_gram]]
 
-            return self.post_filtering(wildcard_input, results)
+            return NGramIndex.post_filtering(wildcard_input, results)
 
         return set()
 
-    def wildcard_ngrams(self, wildcard_input):
+    def wildcard_n_grams(self, wildcard_input):
         """
-        creates the ngrams that based on the wildcard input.
+        creates the n_grams that based on the wildcard input.
         :param wildcard_input:
         :return:
         """
-        ngrams = []
+        n_grams = []
         token_parts = wildcard_input.split("*")
         last_part = len(token_parts)-1
 
         for enum, part in enumerate(wildcard_input.split("*")):
             if part and len(part) >= self.length:
 
-                part_ngrams = get_n_grams(part, self.length)
+                part_n_grams = get_n_grams(part, self.length)
 
                 if enum != last_part:
                     # If not the last part of the token remove the char$
-                    part_ngrams.pop(-1)
+                    part_n_grams.pop(-1)
 
                 if enum != 0:
                     # If not the first part of the token remove the $char
-                    part_ngrams.pop(0)
+                    part_n_grams.pop(0)
 
-                # print(part_ngrams)
+                n_grams += part_n_grams
+        return n_grams
 
-                ngrams += part_ngrams
-        return ngrams
-
-    def post_filtering(self, wildcard_input, suggestions):
+    @staticmethod
+    def post_filtering(wildcard_input, suggestions):
         """
         checks if the suggestion actually matches the wildcard query
         :param wildcard_input:
@@ -107,7 +106,8 @@ def suggest_if_needed(td, token):
         return td.ngram_index.suggestions(token)
     return token
 
+
 if __name__ == "__main__":
     ni = NGramIndex(2)
     print(get_n_grams("results", 2))
-    print(ni.wildcard_ngrams("res*lts"))
+    print(ni.wildcard_n_grams("res*lts"))

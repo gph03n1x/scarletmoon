@@ -1,12 +1,19 @@
-import spacy
+try:
+    import spacy
+    nlp = spacy.load('en_core_web_sm')
+except ImportError:
+    SPACY_INSTALLED = False
+else:
+    SPACY_INSTALLED = True
 from moon import plugins
 from moon.queries.querying import AND_OPERATION
 
-nlp = spacy.load('en_core_web_sm')
+
 
 
 class DependencyFilter(plugins.PluginQuery):
     name = "Dependency filter"
+    enabled = SPACY_INSTALLED
 
     @staticmethod
     def reconstruct_query(sent):

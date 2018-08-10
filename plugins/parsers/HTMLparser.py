@@ -12,6 +12,7 @@ escape = re.compile('(\\n|\\t|\\r)', re.VERBOSE | re.MULTILINE)
 class HTMLParser(plugins.PluginParser):
     name = "HTML parser"
     handles = "*.html"
+    enabled = True
 
     @staticmethod
     def parse_document(file_name):

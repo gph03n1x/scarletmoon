@@ -11,8 +11,8 @@ Implemented with python 3.6.0
 
 ```bash
 pip install -r requirements.txt
+pip install spacy  # Installation failed on my windows machine.
 python -m spacy download en_core_web_sm
-bash bin/install_redis.sh
 ```
 
 ### Adding documents
@@ -33,19 +33,21 @@ Output is the name of the tokentree , which is going to get stored at the storag
 python scan.py -f *.sgm -d reuters -o tokentree
 ```
 
-### Using scarletmoon
-
+### Using scarlet
 
 
 ```bash
-redis-4.0.10/src/redis-server
-# You need to use only one worker else the results get somehow messed up.
-celery worker -A scarlet.celery --loglevel=info -B -P solo
-python scarlet.py
+nameko run scarlet
 ```
+
+### Interacting with the service.
+
+TODO.
+
 
 ### Running the unittests
 
 ```bash
 python -m unittest discover
 ```
+
