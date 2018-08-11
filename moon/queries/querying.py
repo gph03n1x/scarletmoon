@@ -5,15 +5,16 @@ import operator
 from moon.identifier import retrieve_by_hash
 from moon.queries.logic import exempt, intersect, union
 from moon.ranking.tfidf import results_tfidf
+import settings
 
-AND_OPERATION = '<and>'
-OR_OPERATION = '<or>'
-NOT_OPERATION = '<not>'
+AND_OPERATION = settings.AND_OPERATION
+OR_OPERATION = settings.OR_OPERATION
+NOT_OPERATION = settings.NOT_OPERATION
 
 priorities = {
     AND_OPERATION: 2,
     OR_OPERATION: 1,
-    NOT_OPERATION: 2
+    NOT_OPERATION: 2,
 }
 
 operations = {

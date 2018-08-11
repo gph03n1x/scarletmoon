@@ -7,7 +7,7 @@ from moon.structs.documents import document
 
 class ReutersSGMParser(plugins.PluginParser):
     name = "Reuters SGM parser"
-    handles = "reuters/*.sgm"
+    handles = "reut2*.sgm"
     enabled = True
 
     @staticmethod

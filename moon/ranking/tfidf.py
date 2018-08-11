@@ -6,7 +6,7 @@ class results_tfidf:
     Keeps track of each document and it's associated ranking
     """
     def __init__(self):
-        self.tfidf = {}
+        self.tf_idf = {}
         self.idf = {}
         self.docs = {}
 
@@ -35,11 +35,11 @@ class results_tfidf:
         :return:
         """
         for doc in documents:
-            self.tfidf[doc] = 0
+            self.tf_idf[doc] = 0
             for term in self.idf:
                 #print(term+":" + str(self.docs[term][doc]*self.idf[term]))
                 try:
-                    self.tfidf[doc] += self.docs[term][doc]*self.idf[term]
+                    self.tf_idf[doc] += self.docs[term][doc] * self.idf[term]
                 except KeyError:
                     pass
-        return self.tfidf
+        return self.tf_idf

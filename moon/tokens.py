@@ -2,11 +2,13 @@
 import re
 
 from vendor.porter import PorterStemmer
+import settings
 
 tokenizer_regex = re.compile('[A-Z]{2,}(?![a-z])|[A-Z][a-z]+(?=[A-Z])|[\'\w\-]+',
                              re.MULTILINE)
 
-STEM_ENABLED = False
+
+STEM_ENABLED = settings.STEM_ENABLED
 
 
 def tokenizer(text):

@@ -2,13 +2,13 @@
 from contextlib import contextmanager
 import datetime
 import hashlib
-
+import settings
 import sqlalchemy.exc
 from sqlalchemy import Column, Integer, String, create_engine, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session
 
-DB_ECHO = False
+DB_ECHO = settings.DB_ECHO
 # check if db exists
 engine = create_engine('sqlite:///db.sqlite', echo=DB_ECHO)
 Base = declarative_base()

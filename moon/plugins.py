@@ -46,7 +46,7 @@ class PluginsSeeker(abc.ABCMeta):
             __plugin = importlib.import_module(plugin_module)
 
     @classmethod
-    def load_all_plugins(mcs):
+    def load_all_plugins(mcs):  # TODO discover the folders with os.listdir
         mcs.load_core_plugins('parsers')
         mcs.load_core_plugins('query')
 

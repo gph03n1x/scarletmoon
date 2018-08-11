@@ -1,6 +1,6 @@
 import unittest
 
-from moon.ngrams import get_n_grams
+from moon.structs.ngrams import get_n_grams
 
 
 class TestNGrams(unittest.TestCase):

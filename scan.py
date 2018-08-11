@@ -7,6 +7,7 @@ import time
 
 from moon.plugins import PluginsSeeker
 from moon.structs.categorizer import NamedIndexes
+import settings
 
 parser = argparse.ArgumentParser(description='Scans folders for documents')
 parser.add_argument('-f', '--filter', required=True)
@@ -35,6 +36,6 @@ print("[+] Parsing complete")
 print("[*] Time elapsed : "+str(time.time()-start_time))
 
 print("[*] Dumping tokentree")
-with open("storage/" + args.output + ".pickle", 'wb') as pickle_file:
+with open(settings.STORED_INDEX, 'wb') as pickle_file:
     pickle.dump(td, pickle_file)
 print("[+] Dumping done")

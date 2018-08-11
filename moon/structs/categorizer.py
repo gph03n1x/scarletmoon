@@ -1,10 +1,10 @@
 #!/usr/bin/python
 import string
 
-from moon.btree import KeyTree
+from moon.structs.btree import KeyTree
 from moon.identifier import assign
-from moon.ngrams import NGramIndex
-
+from moon.structs.ngrams import NGramIndex
+import settings
 
 class NamedIndexes:
 
@@ -18,7 +18,7 @@ class NamedIndexes:
         :return:
         """
         if name not in self.indexes:
-            self.indexes[name] = FirstLetterSplitter(KeyTree, NGramIndex(2))
+            self.indexes[name] = FirstLetterSplitter(KeyTree, NGramIndex(settings.N_GRAM_INDEX_LENGTH))
 
         return self.indexes[name]
 

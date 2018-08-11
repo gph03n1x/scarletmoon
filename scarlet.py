@@ -4,28 +4,27 @@ import json
 import operator
 import pickle
 import re
-import sys
 import time
 
 from nameko.timer import timer
 from nameko.web.handlers import http
 from werkzeug.wrappers import Response
 
-from moon.ngrams import query_combinations, suggest_if_needed
+from moon.structs.ngrams import query_combinations, suggest_if_needed
 from moon.plugins import PluginsSeeker
 from moon.queries.querying import simple_search
 from moon.structs.categorizer import NamedIndexes
 from moon.tokens import ExtendedPorterStemmer
+import settings
 
-STORAGE = "storage/tokentree.pickle"
-
+STORAGE = settings.STORED_INDEX
+STATS_LIMIT = settings.STATS_LIMIT
+SAVE_INTERVAL = settings.SAVE_INTERVAL
 
 pts = ExtendedPorterStemmer()
 PluginsSeeker.load_core_plugins('parsers')
 PluginsSeeker.load_core_plugins('query')
 
-STATS_LIMIT = 100
-SAVE_INTERVAL = 60
 
 try:
     with open(STORAGE, 'rb') as pickle_file:

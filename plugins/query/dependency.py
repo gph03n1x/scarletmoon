@@ -9,8 +9,6 @@ from moon import plugins
 from moon.queries.querying import AND_OPERATION
 
 
-
-
 class DependencyFilter(plugins.PluginQuery):
     name = "Dependency filter"
     enabled = SPACY_INSTALLED
