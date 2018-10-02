@@ -1,5 +1,65 @@
 #!/usr/bin/python
 import math
+import ast
+import os.path
+
+
+KEY_LEN, TERM_OCCUR_LEN, DOC_DICTIONARY_LEN = 50, 50, 250
+LINE_LENGTH = KEY_LEN + TERM_OCCUR_LEN + DOC_DICTIONARY_LEN
+SEP_CHAR = '&^'
+FILL_CHAR = '~'
+
+
+class CSVBTree:
+    def __init__(self,name, rows):
+        self.name = name
+        self.rows = 0
+        # if
+        with open(self.name, 'r') as csv_file:
+            self.rows = sum([1 for line in csv_file])
+
+    def next_middle(self, level=1):
+        return self.rows / (2 ** level)
+
+    @staticmethod
+    def row_to_csv(key, term_occurance, doc_freq_dict):
+        remaining_key = (KEY_LEN - len(key) - len(SEP_CHAR)) * FILL_CHAR
+        remaining_term = (TERM_OCCUR_LEN - len(str(term_occurance)) - len(SEP_CHAR)) * FILL_CHAR
+        # -1 because we add newline
+        remaining_dict = (DOC_DICTIONARY_LEN - len(str(doc_freq_dict)) - 1) * FILL_CHAR
+
+        return f'{remaining_key}{key}&^{remaining_term}' \
+               f'{term_occurance}&^{remaining_dict}{str(doc_freq_dict)}\n'
+
+    @staticmethod
+    def csv_to_row(row):
+        vals = [val.strip(f'{FILL_CHAR}\n') for val in row.split(SEP_CHAR)]
+        key, occurance, doc_freq_dict = vals
+        return key, int(occurance), ast.literal_eval(doc_freq_dict)
+
+    def update_row(self, key, value, doc_freq, term_occurrences):
+        pass
+
+    def add_row(self, key, value, doc_freq, term_occurrences):
+        pass
+
+    def find_row(self, key):
+        print(self.rows)
+        input()
+        with open(self.name, 'r') as csv_file:
+            pass
+            row_id = 0
+            direction = 1
+            iteration = 1
+            while True:
+                row_id, row_key, *_ = row_id + direction * self.next_middle(iteration)
+                if key == row_key:
+                    return row_id
+                elif key > row_key:
+                    direction = -1
+                else:
+                    direction = 1
+                iteration += 1
 
 
 class KeyNode:
