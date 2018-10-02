@@ -50,6 +50,7 @@ def get_hash(document, article):
     return m.hexdigest()
 
 
+# TODO use id in the files since they take les characters
 def assign(document, article, url=""):
     doc_hash = get_hash(document, article)
 
@@ -58,21 +59,25 @@ def assign(document, article, url=""):
             text_source = TextSource(document=document, article=article, url=url, hash=doc_hash)
             session.add(text_source)
             session.commit()
+            session.flush()
+            session.refresh(text_source)
+            return text_source.id
         except sqlalchemy.exc.IntegrityError:
             # update the modified time.
             session.rollback()
             query = session.query(TextSource).filter(TextSource.hash == doc_hash)
-            _row = query.first()
-            _row.modified_date = datetime.datetime.utcnow()
-            session.merge(_row)
+            text_source = query.first()
+            text_source.modified_date = datetime.datetime.utcnow()
+            session.merge(text_source)
             session.commit()
+            session.flush()
+            session.refresh(text_source)
+            return text_source.id
 
-    return doc_hash
 
-
-def retrieve_by_hash(doc_hash):
+def retrieve_by_hash(d_id):
     with session_scope() as session:
-        query = session.query(TextSource).filter(TextSource.hash == doc_hash)
+        query = session.query(TextSource).filter(TextSource.id == d_id)
         _row = query.first()
         return {'id': _row.id, 'document': _row.document, 'article': _row.article, 'hash': _row.hash, 'url': _row.url,
                 'created': str(_row.created_date), 'modified': str(_row.modified_date)}

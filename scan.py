@@ -16,8 +16,8 @@ parser.add_argument('-d', '--directory', required=True)
 
 args = parser.parse_args()
 # TODO debug flag
-# shutil.rmtree('storage/')
-# os.mkdir('storage/')
+shutil.rmtree('storage/')
+os.mkdir('storage/')
 
 matches = [os.path.join(args.directory, document) for document in os.listdir(args.directory)
     if fnmatch.fnmatch(document, args.filter)]

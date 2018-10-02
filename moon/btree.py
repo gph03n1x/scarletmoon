@@ -5,7 +5,7 @@ import os
 import os.path
 
 
-KEY_LEN, TERM_OCCUR_LEN, DOC_DICTIONARY_LEN = 50, 50, 250
+KEY_LEN, TERM_OCCUR_LEN, DOC_DICTIONARY_LEN = 30, 10, 310
 LINE_LENGTH = KEY_LEN + TERM_OCCUR_LEN + DOC_DICTIONARY_LEN
 SEP_CHAR = '&^'
 FILL_CHAR = '~'
@@ -109,6 +109,8 @@ class CSVBTree:
                     r = csv_file.readline()
                 row_key, *data = CSVBTree.csv_to_row(r)
                 # print(row_id, direction, iteration, seek_point, row_key)
+                if row_key is None:
+                    return row_id, False, None
                 if key == row_key:
                     return row_id, True, (row_key, *data)
                 elif key > row_key:
