@@ -7,7 +7,6 @@ import re
 import sys
 import time
 
-from nameko.timer import timer
 from nameko.web.handlers import http
 from werkzeug.wrappers import Response
 
@@ -17,7 +16,7 @@ from moon.queries.querying import simple_search
 from moon.structs.categorizer import NamedIndexes
 from moon.tokens import ExtendedPorterStemmer
 
-STORAGE = "storage/tokentree.pickle"
+STORAGE_ID = "storage/GEFHNghgbf6jy"
 
 
 pts = ExtendedPorterStemmer()
@@ -27,12 +26,7 @@ PluginsSeeker.load_core_plugins('query')
 STATS_LIMIT = 100
 SAVE_INTERVAL = 60
 
-try:
-    with open(STORAGE, 'rb') as pickle_file:
-        print("[*] Loading pickle file")
-        td = pickle.load(pickle_file)
-except IOError:
-    td = NamedIndexes()
+td = NamedIndexes(STORAGE_ID)
 
 
 class Service:
@@ -75,14 +69,6 @@ class Service:
         original_query = request.args.get('query').lower()
         result = self.get_suggestions(index_name, original_query)
         return Response(json.dumps(result), status=200, mimetype='application/json')
-
-    @timer(interval=SAVE_INTERVAL)
-    def overwrite_token_tree(self):
-        # TODO save only if changed.
-        print("[*] Saving token tree")
-        with open(STORAGE, 'wb') as pickle_file:
-            pickle.dump(td, pickle_file)
-        print("[+] Saved token tree")
 
     def add_to_index(self, index, match, url):
         print("[*] Parsing: " + match)

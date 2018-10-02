@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import math
 import ast
+import os
 import os.path
 
 
@@ -11,15 +12,15 @@ FILL_CHAR = '~'
 
 
 class CSVBTree:
-    def __init__(self,name, rows):
+    def __init__(self, name):
         self.name = name
         self.rows = 0
-        # if
-        with open(self.name, 'r') as csv_file:
-            self.rows = sum([1 for line in csv_file])
+        if os.path.isfile(name):
+            with open(self.name, 'r') as csv_file:
+                self.rows = sum([1 for _ in csv_file])
 
     def next_middle(self, level=1):
-        return self.rows / (2 ** level)
+        return self.rows // (2 ** level)
 
     @staticmethod
     def row_to_csv(key, term_occurance, doc_freq_dict):
@@ -28,70 +29,106 @@ class CSVBTree:
         # -1 because we add newline
         remaining_dict = (DOC_DICTIONARY_LEN - len(str(doc_freq_dict)) - 1) * FILL_CHAR
 
-        return f'{remaining_key}{key}&^{remaining_term}' \
-               f'{term_occurance}&^{remaining_dict}{str(doc_freq_dict)}\n'
+        return f'{remaining_key}{key}&^{remaining_term}{term_occurance}&^{remaining_dict}{str(doc_freq_dict)}\n'
 
     @staticmethod
     def csv_to_row(row):
         vals = [val.strip(f'{FILL_CHAR}\n') for val in row.split(SEP_CHAR)]
+        if len(vals) != 3:
+            return None, None, None
         key, occurance, doc_freq_dict = vals
         return key, int(occurance), ast.literal_eval(doc_freq_dict)
 
-    def update_row(self, key, value, doc_freq, term_occurrences):
-        pass
+    def init_csv(self, key, term_occurrences, value, doc_freq):
+        with open(self.name, 'w') as csv_file:
+            csv_file.write(
+                CSVBTree.row_to_csv(key, term_occurrences, {value: doc_freq}))
 
-    def add_row(self, key, value, doc_freq, term_occurrences):
-        pass
+    # TODO: multiple adds, finds
+    def add(self, key, term_occurrences, value, doc_freq):
+        if not os.path.isfile(self.name):
+            self.init_csv(key, term_occurrences, value, doc_freq)
+            return
 
-    def find_row(self, key):
-        print(self.rows)
-        input()
+        row_id, found, data = self.b_search_row(key)
+
+        with open(f"{self.name}.lock", 'w') as csv_file_lock:
+            with open(self.name, 'r') as csv_file:
+                for line_id, line in enumerate(csv_file):
+
+                    if line_id == row_id and found:
+                        key, _term_occur, _doc_freq = CSVBTree.csv_to_row(line)
+                        _term_occur += term_occurrences
+                        _doc_freq[value] = doc_freq
+                        csv_file_lock.write(CSVBTree.row_to_csv(key, _term_occur, _doc_freq))
+
+                    else:
+
+                        if line_id == row_id and not found:
+                            line_key, *_ = CSVBTree.csv_to_row(line)
+                            if line_key > key:
+                                csv_file_lock.write(
+                                    CSVBTree.row_to_csv(key, term_occurrences, {value: doc_freq}))
+                                csv_file_lock.write(line)
+                                self.rows += 1
+                            else:
+                                csv_file_lock.write(line)
+                                csv_file_lock.write(
+                                    CSVBTree.row_to_csv(key, term_occurrences, {value: doc_freq}))
+                                self.rows += 1
+
+                        else:
+                            csv_file_lock.write(line)
+
+        os.remove(self.name)
+        os.rename(f"{self.name}.lock", self.name)
+
+    def find(self, key): # TODO gets double searched for some reason
+
+        print(key)
+        print(self.name)
+        key, found, data = self.b_search_row(key)
+        print(key, found, data)
+        if found:
+            row = CSVRow(*data)
+            return row, row.idf(self.rows)
+
+        return None, 0
+
+    def b_search_row(self, key):
         with open(self.name, 'r') as csv_file:
-            pass
-            row_id = 0
-            direction = 1
-            iteration = 1
-            while True:
-                row_id, row_key, *_ = row_id + direction * self.next_middle(iteration)
+            lower = 0
+            upper = self.rows
+            while lower < upper:
+                row_id = lower + (upper - lower) // 2
+
+                seek_point = row_id * LINE_LENGTH
+                csv_file.seek(seek_point)
+                r = csv_file.readline()
+                if len(r) < 2:
+                    r = csv_file.readline()
+                row_key, *data = CSVBTree.csv_to_row(r)
+                print(row_key, data)
+                if row_key is None:
+                    return row_id, False, (row_key, *data)
+                # print(row_id, direction, iteration, seek_point, row_key)
                 if key == row_key:
-                    return row_id
+                    return row_id, True, (row_key, *data)
                 elif key > row_key:
-                    direction = -1
-                else:
-                    direction = 1
-                iteration += 1
+                    if lower == row_id:  # these two are the actual lines
+                        break
+                    lower = row_id
+                elif key < row_key:
+                    upper = row_id
+
+            return lower, False, None
 
 
-class KeyNode:
-    """
-    A keynode a structure that includes a term and
-    the documents this term is found along with the frequency in
-    each document and also tracks how many times this word was found.
-    """
-    def __init__(self, key, value, doc_freq, term_freq):
-        self.left = None
-        self.right = None
+class CSVRow:
+    def __init__(self, key, freq, docs):
         self.key = key
-        self.freq = term_freq
-        self.documents = {value: doc_freq}
-
-    def get_value(self):
-        """
-        returns the document identifiers where this word was found.
-        :return: set
-        """
-        return set(self.documents.keys())
-
-    def update(self, value, doc_freq, term_freq):
-        """
-        adds a document-article identifier and the frequency this word was found there.
-        :param value:
-        :param doc_freq:
-        :param term_freq:
-        :return:
-        """
-        self.freq += term_freq
-        self.documents[value] = doc_freq
+        self.freq = freq
+        self.documents = docs
 
     def idf(self, number_of_tokens):
         """
@@ -101,110 +138,9 @@ class KeyNode:
         """
         return math.log(number_of_tokens / (1 + self.freq))
 
-    def __str__(self):
-        return "Node(key={0}, freq={1}, docs={2})".format(self.key, self.freq, str(self.documents))
-
-    def __repr__(self):
-        return str(self)
-
-    def get_next(self, key):
+    def get_value(self):
         """
-        :param key:
-        :return:
+        returns the document identifiers where this word was found.
+        :return: set
         """
-        if key < self.key:
-            return self.left, self
-        return self.right, self
-
-    def set_children(self, key, value, doc_freq, term_freq):
-        """
-        :param key:
-        :param value:
-        :param doc_freq:
-        :param term_freq:
-        :return:
-        """
-        if key < self.key:
-            self.left = KeyNode(key, value, doc_freq, term_freq)
-        else:
-            self.right = KeyNode(key, value, doc_freq, term_freq)
-
-
-class KeyTree:
-    def __init__(self, parent=None):
-        self.parent = parent
-        self.root = None
-        self.size = 0
-
-    def get_doc_count(self):
-        """
-        returns the count of tokens in a tree.
-        :return:
-        """
-        if self.parent is None:
-            return self.size
-        return self.parent.count
-
-    def add(self, key, value, doc_freq, term_freq):
-        """
-        adds a document to the token-tree, along with the document frequency and the term frequency.
-        :param key:
-        :param value:
-        :param doc_freq:
-        :param term_freq:
-        :return:
-        """
-        if self.root is None:
-            self.root = KeyNode(key, value, doc_freq, term_freq)
-            self.size += 1
-            return
-
-        node = self.root
-        while True:
-
-            if node.key == key:
-                node.update(value, doc_freq, term_freq)
-                break
-
-            node, parent = node.get_next(key)
-
-            if not node:
-                parent.set_children(key, value, doc_freq, term_freq)
-                break
-
-    def find(self, key):
-        """
-        looks for a key-node.
-        :param key:
-        :return:
-        """
-        node = self.root
-        while node:
-            # print(node.key)
-            if key == node.key:
-                return node, node.idf(self.get_doc_count())
-            node, _ = node.get_next(key)
-
-        return None, 0  # default idf if the token doesnt exist
-
-    def delete_tr(self):
-        """
-        deletes the tree using the garbage collector
-        :return:
-        """
-        self.root = None
-
-    def traverse(self):
-        if self.root is None:
-            return []
-
-        queue = [self.root]
-        nodes = []
-        while queue:
-            node = queue.pop()
-            nodes.append((node.key, node.freq))
-            if node.left:
-                queue.append(node.left)
-            if node.right:
-                queue.append(node.right)
-        return nodes
+        return set(self.documents.keys())

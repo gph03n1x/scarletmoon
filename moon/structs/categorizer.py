@@ -1,15 +1,16 @@
 #!/usr/bin/python
 import string
 
-from moon.btree import KeyTree
+from moon.btree import CSVBTree
 from moon.identifier import assign
 from moon.ngrams import NGramIndex
 
 
 class NamedIndexes:
 
-    def __init__(self):
+    def __init__(self, u_id):
         self.indexes = {}
+        self.u_id = u_id
 
     def __getitem__(self, name):
         """
@@ -18,7 +19,7 @@ class NamedIndexes:
         :return:
         """
         if name not in self.indexes:
-            self.indexes[name] = FirstLetterSplitter(KeyTree, NGramIndex(2))
+            self.indexes[name] = FirstLetterSplitter(CSVBTree, NGramIndex(2), f"{self.u_id}-{name}")
 
         return self.indexes[name]
 
@@ -29,15 +30,15 @@ class FirstLetterSplitter:
     There is a tree for every letter, every digit, and a misc tree for everything else.
     """
 
-    def __init__(self, structure, ngram_index):
+    def __init__(self, structure, ngram_index, u_id):
         self.ngram_index = ngram_index
         self.structs = {}
         self.count = 0
         for letter in string.ascii_lowercase:
-            self.structs[letter] = structure(self)
+            self.structs[letter] = structure(f"{u_id}-{letter}")
         for digit in string.digits:
-            self.structs[digit] = structure(self)
-        self.structs['misc'] = structure(self)
+            self.structs[digit] = structure(f"{u_id}-{digit}")
+        self.structs['misc'] = structure(f"{u_id}-misc")
 
     def __getitem__(self, first_letter):
         """
@@ -60,10 +61,11 @@ class FirstLetterSplitter:
         tokens = document.frequencies
         id = assign(*document.identifier(), url=url)
         for token in tokens:
-            self.count += 1
-            doc_freq = tokens[token] / document.total_tokens
-
-            self[token].add(token, id, doc_freq, tokens[token])
+            if token.isalpha():  # TODO temp to fix sorting
+                self.count += 1
+                doc_freq = tokens[token] / document.total_tokens
+                print(token, tokens[token],  id, doc_freq)
+                self[token].add(token.strip(), tokens[token],  id, doc_freq)
 
         tokens = document.tokens
         for token in tokens:
@@ -85,7 +87,7 @@ class FirstLetterSplitter:
         :param token:
         :return:
         """
-        return self[token].find(token)
+        return self[token].find(token.strip())
 
     def size(self, category=None):
         """
