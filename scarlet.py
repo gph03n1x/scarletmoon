@@ -51,7 +51,6 @@ class Service:
         result = self.get_stats(index_name)
         return Response(json.dumps(result), status=200, mimetype='application/json')
 
-
     @http('POST', "/index")
     def index_data(self, request):
         print(request.data)
@@ -61,7 +60,6 @@ class Service:
 
         self.add_to_index(index_name, match, url)
         return Response(json.dumps({"status": 200}))
-
 
     @http('GET', "/suggest")
     def suggest_corrections(self, request):
@@ -93,13 +91,12 @@ class Service:
 
     def get_stats(self, index):
         limit = max(STATS_LIMIT, td[index].size())
-        nodes = td[index].traverse()
+        # nodes = td[index].traverse()
         json_response = {
-            "top_frequencies": [
-                [result[0], result[1]] for result in heapq.nlargest(limit, nodes, key=operator.itemgetter(1))
-            ],
+            # "top_frequencies": [
+            #     [result[0], result[1]] for result in heapq.nlargest(limit, nodes, key=operator.itemgetter(1))
+            # ],
             "size": td[index].size(),  # TODO might be bugged
-            "limit": limit
 
         }
         return json_response

@@ -3,6 +3,7 @@ from collections import Counter
 
 from moon.tokens import ExtendedPorterStemmer, tokenizer
 
+
 # TODO: might not be needed anymore
 class document:
     def __init__(self, doc_name, title, text):

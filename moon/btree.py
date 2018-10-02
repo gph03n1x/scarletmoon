@@ -52,21 +52,22 @@ class CSVBTree:
 
         row_id, found, data = self.b_search_row(key)
 
-        with open(f"{self.name}.lock", 'w') as csv_file_lock:
+        with open(f"{self.name}.lock", 'w+') as csv_file_lock:
             with open(self.name, 'r') as csv_file:
                 for line_id, line in enumerate(csv_file):
 
                     if line_id == row_id and found:
-                        key, _term_occur, _doc_freq = CSVBTree.csv_to_row(line)
+                        _key, _term_occur, _doc_freq = CSVBTree.csv_to_row(line)
                         _term_occur += term_occurrences
                         _doc_freq[value] = doc_freq
-                        csv_file_lock.write(CSVBTree.row_to_csv(key, _term_occur, _doc_freq))
+                        csv_file_lock.write(CSVBTree.row_to_csv(_key, _term_occur, _doc_freq))
 
                     else:
 
                         if line_id == row_id and not found:
                             line_key, *_ = CSVBTree.csv_to_row(line)
-                            if line_key > key:
+
+                            if key < line_key:
                                 csv_file_lock.write(
                                     CSVBTree.row_to_csv(key, term_occurrences, {value: doc_freq}))
                                 csv_file_lock.write(line)
@@ -83,12 +84,8 @@ class CSVBTree:
         os.remove(self.name)
         os.rename(f"{self.name}.lock", self.name)
 
-    def find(self, key): # TODO gets double searched for some reason
-
-        print(key)
-        print(self.name)
+    def find(self, key):  # TODO gets double searched for some reason
         key, found, data = self.b_search_row(key)
-        print(key, found, data)
         if found:
             row = CSVRow(*data)
             return row, row.idf(self.rows)
@@ -96,9 +93,12 @@ class CSVBTree:
         return None, 0
 
     def b_search_row(self, key):
+
         with open(self.name, 'r') as csv_file:
             lower = 0
             upper = self.rows
+            row_id = 0
+
             while lower < upper:
                 row_id = lower + (upper - lower) // 2
 
@@ -108,20 +108,17 @@ class CSVBTree:
                 if len(r) < 2:
                     r = csv_file.readline()
                 row_key, *data = CSVBTree.csv_to_row(r)
-                print(row_key, data)
-                if row_key is None:
-                    return row_id, False, (row_key, *data)
                 # print(row_id, direction, iteration, seek_point, row_key)
                 if key == row_key:
                     return row_id, True, (row_key, *data)
                 elif key > row_key:
                     if lower == row_id:  # these two are the actual lines
-                        break
+                        return lower+1, False, None
                     lower = row_id
                 elif key < row_key:
                     upper = row_id
 
-            return lower, False, None
+            return row_id, False, None
 
 
 class CSVRow:

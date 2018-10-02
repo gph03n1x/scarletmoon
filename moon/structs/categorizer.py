@@ -61,11 +61,9 @@ class FirstLetterSplitter:
         tokens = document.frequencies
         id = assign(*document.identifier(), url=url)
         for token in tokens:
-            if token.isalpha():  # TODO temp to fix sorting
-                self.count += 1
-                doc_freq = tokens[token] / document.total_tokens
-                print(token, tokens[token],  id, doc_freq)
-                self[token].add(token.strip(), tokens[token],  id, doc_freq)
+            self.count += 1
+            doc_freq = tokens[token] / document.total_tokens
+            self[token].add(token.strip(), tokens[token],  id, doc_freq)
 
         tokens = document.tokens
         for token in tokens:
@@ -96,6 +94,6 @@ class FirstLetterSplitter:
         :return:
         """
         if category is None:
-            return sum(self.structs[key].size for key in self.structs)
+            return sum(self.structs[key].rows for key in self.structs)
         elif category in self.structs:
-            return self.structs[category].size
+            return self.structs[category].rows

@@ -2,8 +2,9 @@
 import argparse
 import fnmatch
 import os
-import pickle
+import shutil
 import time
+
 
 from moon.plugins import PluginsSeeker
 from moon.structs.categorizer import NamedIndexes
@@ -14,6 +15,9 @@ parser.add_argument('-f', '--filter', required=True)
 parser.add_argument('-d', '--directory', required=True)
 
 args = parser.parse_args()
+# TODO debug flag
+# shutil.rmtree('storage/')
+# os.mkdir('storage/')
 
 matches = [os.path.join(args.directory, document) for document in os.listdir(args.directory)
     if fnmatch.fnmatch(document, args.filter)]
